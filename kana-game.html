@@ -23,7 +23,7 @@
 }
 * { margin:0; padding:0; box-sizing:border-box; cursor:none; }
 html { scroll-behavior:smooth; }
-body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC',sans-serif; min-height:100vh; overflow-x:hidden; }
+body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif; min-height:100vh; overflow-x:hidden; }
 
 /* CURSOR */
 #cur { width:16px;height:16px;background:var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .1s;mix-blend-mode:screen; }
@@ -67,9 +67,9 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC',sans-
 .mode-btn:hover { transform:translateY(-4px); border-color:var(--sakura); box-shadow:0 8px 30px var(--glow-pink); }
 .mode-btn:hover::before { opacity:1; background:radial-gradient(ellipse at center,rgba(255,107,157,.1),transparent); }
 .mode-btn.selected { border-color:var(--matcha); background:rgba(0,229,200,.1); box-shadow:0 0 20px var(--glow-teal); }
-.mode-icon { font-size:2rem; margin-bottom:6px; }
-.mode-name { font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:.95rem; }
-.mode-count { font-size:.75rem; color:var(--muted); margin-top:2px; }
+.mode-icon { font-size:2rem; margin-bottom:6px; color:var(--text); text-shadow:0 0 16px rgba(255,255,255,.5); }
+.mode-name { font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:.95rem; color:var(--text); text-shadow:0 0 12px rgba(255,255,255,.3); }
+.mode-count { font-size:.75rem; color:rgba(255,255,255,.45); margin-top:2px; }
 
 .diff-row { display:flex; gap:10px; margin-bottom:28px; }
 .diff-btn {
@@ -148,7 +148,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC',sans-
   box-shadow:0 20px 60px rgba(0,0,0,.4);
 }
 .kana-char {
-  font-family:'Zen Maru Gothic',sans-serif;
+  font-family:'Zen Maru Gothic','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif;
   font-size:clamp(5rem,18vw,9rem);
   font-weight:900; line-height:1;
   display:block; animation:charPop .35s cubic-bezier(.34,1.56,.64,1) both;
@@ -194,9 +194,9 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC',sans-
 .r-stat { background:var(--card); border-radius:16px; padding:16px; text-align:center; }
 .r-stat-num { font-family:'Orbitron',sans-serif; font-size:1.6rem; font-weight:700; }
 .r-stat-label { font-size:.75rem; color:var(--muted); margin-top:4px; }
-.result-name-row { display:flex; gap:10px; align-items:center; width:100%; max-width:480px; }
+.result-name-row { display:flex; gap:10px; align-items:center; width:100%; max-width:480px; box-sizing:border-box; }
 .name-input {
-  flex:1; background:var(--card); border:2px solid var(--card2); border-radius:12px;
+  flex:1; min-width:0; background:var(--card); border:2px solid var(--card2); border-radius:12px;
   padding:12px 16px; color:var(--text); font-family:'Noto Sans TC',sans-serif; font-size:1rem; outline:none;
   transition:border-color .2s;
 }
@@ -285,11 +285,20 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC',sans-
 @keyframes popupFly { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-60px) scale(1.4)} }
 
 @media(max-width:480px) {
-  .mode-grid { grid-template-columns:1fr 1fr; }
+  .screen { padding:20px 16px; }
+  .mode-grid { grid-template-columns:1fr 1fr; max-width:100%; }
   .options-grid { grid-template-columns:1fr 1fr; }
   .result-stats { grid-template-columns:repeat(3,1fr); }
   .game-header { padding:12px 16px; }
   .hud-value { font-size:1rem; }
+  .result-name-row { flex-direction:column; align-items:stretch; }
+  .save-btn { width:100%; text-align:center; }
+  .result-btns { flex-direction:column; align-items:stretch; width:100%; max-width:480px; }
+  .retry-btn, .home-btn2 { text-align:center; }
+  .start-btn { padding:16px 40px; font-size:1.05rem; width:100%; max-width:320px; }
+  .diff-row { flex-wrap:wrap; justify-content:center; }
+  #resultScreen { padding:20px 16px; }
+  .r-stat-num { font-size:1.2rem; }
 }
 </style>
 </head>
@@ -405,7 +414,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC',sans-
   <button class="back-btn" onclick="goHome()">← 回首頁</button>
 </div>
 
-<script>
+<script type="module">
 // ===== CURSOR =====
 const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
 let mx=0,my=0;
@@ -549,14 +558,9 @@ function scorePopup(x,y,pts,isCorrect){
 // ===== MODE/DIFF TOGGLES =====
 function toggleMode(btn){
   const mode=btn.dataset.mode;
-  if(selectedModes.includes(mode)){
-    if(selectedModes.length===1)return;
-    selectedModes=selectedModes.filter(m=>m!==mode);
-    btn.classList.remove('selected');
-  } else {
-    selectedModes.push(mode);
-    btn.classList.add('selected');
-  }
+  selectedModes=[mode];
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
 }
 function setDiff(btn){
   document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('selected'));
@@ -576,7 +580,9 @@ function buildQuestions(){
 }
 
 function getWrongOptions(correct, pool, n=3){
-  const allAnswers=[...new Set(pool.map(q=>q.answer))].filter(a=>a!==correct);
+  // 只從同模式、同類型優先抽錯誤選項，避免混入其他模式
+  const sameType=pool.filter(q=>q.answer!==correct);
+  const allAnswers=[...new Set(sameType.map(q=>q.answer))];
   const shuffled=allAnswers.sort(()=>Math.random()-.5);
   return shuffled.slice(0,n);
 }
@@ -749,65 +755,103 @@ function animCount(id,from,to,dur){
   requestAnimationFrame(step);
 }
 
+// ===== FIREBASE SETUP =====
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC5Xp7xvfCGiGzAvs9bxjrx3bJBphp0_Yg",
+  authDomain: "kana-game-kawauso.firebaseapp.com",
+  projectId: "kana-game-kawauso",
+  storageBucket: "kana-game-kawauso.firebasestorage.app",
+  messagingSenderId: "90199049193",
+  appId: "1:90199049193:web:1432f3d6f80e60c74b8178",
+  measurementId: "G-4L3Q63XQ1W"
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+getAnalytics(fbApp);
+
 // ===== LEADERBOARD =====
-function loadLB(){ try{return JSON.parse(localStorage.getItem('kanaLB')||'[]');}catch(e){return [];} }
-function saveLB(lb){ try{localStorage.setItem('kanaLB',JSON.stringify(lb));}catch(e){} }
-
-function saveScore(){
-  const name=document.getElementById('playerName').value.trim()||'匿名冒險家';
-  const lb=loadLB();
-  const modeLabel=selectedModes.join('+');
-  lb.push({name,score,acc:total>0?Math.round(correct/total*100):0,streak:maxStreak,mode:modeLabel,diff:difficulty,date:new Date().toLocaleDateString('zh-TW')});
-  lb.sort((a,b)=>b.score-a.score);
-  saveLB(lb.slice(0,50));
-  document.querySelector('.save-btn').textContent='✅ 已儲存！';
-  document.querySelector('.save-btn').disabled=true;
-}
-
-function showLeaderboard(){
-  showScreen('lbScreen');
-  renderLB();
-}
-
-function renderLB(filter=null){
-  const lb=loadLB();
-  const list=document.getElementById('lbList');
-  const modes=[...new Set(lb.map(e=>e.mode))];
-  const filterEl=document.getElementById('lbFilter');
-  filterEl.innerHTML='';
-  if(modes.length>1){
-    filterEl.innerHTML=`<button class="lb-filter-btn${filter===null?' active':''}" onclick="renderLB(null)">全部</button>`;
-    modes.forEach(m=>{
-      filterEl.innerHTML+=`<button class="lb-filter-btn${filter===m?' active':''}" onclick="renderLB('${m}')">${m}</button>`;
+async function saveScore(){
+  const name = document.getElementById('playerName').value.trim() || '匿名冒險家';
+  const saveBtn = document.querySelector('.save-btn');
+  saveBtn.textContent = '儲存中...';
+  saveBtn.disabled = true;
+  try {
+    await addDoc(collection(db, 'leaderboard'), {
+      name,
+      score,
+      acc: total > 0 ? Math.round(correct / total * 100) : 0,
+      streak: maxStreak,
+      mode: selectedModes[0],
+      diff: difficulty,
+      date: new Date().toLocaleDateString('zh-TW'),
+      timestamp: Date.now()
     });
+    saveBtn.textContent = '✅ 已儲存！';
+  } catch(e) {
+    saveBtn.textContent = '❌ 儲存失敗';
+    saveBtn.disabled = false;
   }
+}
 
-  const filtered=filter?lb.filter(e=>e.mode===filter):lb;
-  list.innerHTML='';
-  if(filtered.length===0){
-    list.innerHTML=`<div class="lb-empty"><div class="lb-empty-icon">🎮</div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
-    return;
+async function showLeaderboard(){
+  showScreen('lbScreen');
+  await renderLB();
+}
+
+async function renderLB(filter=null){
+  const list = document.getElementById('lbList');
+  const filterEl = document.getElementById('lbFilter');
+  list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">⏳</div>載入中...</div>`;
+
+  try {
+    const q = query(collection(db, 'leaderboard'), orderBy('score', 'desc'), limit(50));
+    const snapshot = await getDocs(q);
+    let entries = [];
+    snapshot.forEach(doc => entries.push(doc.data()));
+
+    // build filter buttons
+    const modes = [...new Set(entries.map(e => e.mode))];
+    filterEl.innerHTML = '';
+    if(modes.length > 1){
+      filterEl.innerHTML = `<button class="lb-filter-btn${filter===null?' active':''}" onclick="renderLB(null)">全部</button>`;
+      modes.forEach(m => {
+        filterEl.innerHTML += `<button class="lb-filter-btn${filter===m?' active':''}" onclick="renderLB('${m}')">${m}</button>`;
+      });
+    }
+
+    const filtered = filter ? entries.filter(e => e.mode === filter) : entries;
+    list.innerHTML = '';
+    if(filtered.length === 0){
+      list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">🎮</div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
+      return;
+    }
+    const rankClasses = ['rank-1','rank-2','rank-3'];
+    const rankNums = ['1','2','3'];
+    filtered.slice(0,20).forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'lb-row' + (i < 3 ? ' ' + rankClasses[i] : '');
+      row.style.animationDelay = `${i * .05}s`;
+      const diffLabel = {normal:'普通', hard:'困難', blitz:'閃電'}[entry.diff] || entry.diff;
+      row.innerHTML = `
+        <div class="lb-rank-badge">${i < 3 ? rankNums[i] : i+1}</div>
+        <div class="lb-info">
+          <div class="lb-name">${entry.name}</div>
+          <div class="lb-meta">正確率 ${entry.acc}% · 最高連擊 ×${entry.streak} · ${entry.date}</div>
+        </div>
+        <div class="lb-right">
+          <div class="lb-score">${entry.score}</div>
+          <div class="lb-diff">${entry.mode} · ${diffLabel}</div>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  } catch(e) {
+    list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">❌</div>載入失敗，請稍後再試</div>`;
   }
-  const rankClasses=['rank-1','rank-2','rank-3'];
-  const rankNums=['1','2','3'];
-  filtered.slice(0,20).forEach((entry,i)=>{
-    const row=document.createElement('div');
-    row.className='lb-row'+(i<3?' '+rankClasses[i]:'');
-    row.style.animationDelay=`${i*.05}s`;
-    const diffLabel={normal:'普通',hard:'困難',blitz:'閃電'}[entry.diff]||entry.diff;
-    row.innerHTML=`
-      <div class="lb-rank-badge">${i<3?rankNums[i]:i+1}</div>
-      <div class="lb-info">
-        <div class="lb-name">${entry.name}</div>
-        <div class="lb-meta">正確率 ${entry.acc}% · 最高連擊 ×${entry.streak} · ${entry.date}</div>
-      </div>
-      <div class="lb-right">
-        <div class="lb-score">${entry.score}</div>
-        <div class="lb-diff">${entry.mode} · ${diffLabel}</div>
-      </div>
-    `;
-    list.appendChild(row);
-  });
 }
 
 // ===== SCREEN MANAGEMENT =====
@@ -816,6 +860,17 @@ function showScreen(id){
   document.getElementById(id).classList.remove('hidden');
 }
 function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); }
+
+// ===== EXPOSE TO WINDOW (needed for onclick in HTML) =====
+window.toggleMode = toggleMode;
+window.setDiff = setDiff;
+window.startGame = startGame;
+window.retryGame = retryGame;
+window.quitGame = quitGame;
+window.saveScore = saveScore;
+window.showLeaderboard = showLeaderboard;
+window.renderLB = renderLB;
+window.goHome = goHome;
 
 // ===== INIT =====
 showScreen('homeScreen');
