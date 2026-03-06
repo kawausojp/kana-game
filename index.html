@@ -316,12 +316,12 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   <div class="home-sub">GO · GO · にほんご！</div>
 
   <div class="mode-grid" id="modeGrid">
-    <button class="mode-btn selected" data-mode="hiragana" onclick="toggleMode(this)">
+    <button class="mode-btn selected" data-mode="hiragana">
       <div class="mode-icon">ひ</div>
       <div class="mode-name">平假名</div>
       <div class="mode-count">46 + 濁音拗音</div>
     </button>
-    <button class="mode-btn" data-mode="katakana" onclick="toggleMode(this)">
+    <button class="mode-btn" data-mode="katakana">
       <div class="mode-icon">カ</div>
       <div class="mode-name">片假名</div>
       <div class="mode-count">46 + 濁音拗音</div>
@@ -329,13 +329,13 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   </div>
 
   <div class="diff-row">
-    <button class="diff-btn selected" data-diff="normal" onclick="setDiff(this)">⚡ 普通</button>
-    <button class="diff-btn" data-diff="hard" onclick="setDiff(this)">🔥 困難</button>
-    <button class="diff-btn" data-diff="blitz" onclick="setDiff(this)">💀 閃電</button>
+    <button class="diff-btn selected" data-diff="normal">⚡ 普通</button>
+    <button class="diff-btn" data-diff="hard">🔥 困難</button>
+    <button class="diff-btn" data-diff="blitz">💀 閃電</button>
   </div>
 
-  <button class="start-btn" onclick="startGame()">▶ 開始冒險！</button>
-  <button class="leaderboard-link" onclick="showLeaderboard()">🏆 查看排行榜</button>
+  <button class="start-btn" id="startBtn">▶ 開始冒險！</button>
+  <button class="leaderboard-link" id="lbBtn">🏆 查看排行榜</button>
 </div>
 
 <!-- GAME -->
@@ -360,7 +360,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   </div>
   <div class="timer-bar-wrap"><div class="timer-bar" id="timerBar"></div></div>
   <div class="combo-banner" id="comboBanner">🔥 COMBO ×5</div>
-  <button class="quit-btn" onclick="quitGame()">✕ 結束</button>
+  <button class="quit-btn" id="quitBtn">✕ 結束</button>
 
   <div class="question-area">
     <div class="progress-dots" id="progressDots"></div>
@@ -394,11 +394,11 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   </div>
   <div class="result-name-row">
     <input class="name-input" id="playerName" placeholder="輸入你的名字存入排行榜 🏆" maxlength="12">
-    <button class="save-btn" onclick="saveScore()">儲存</button>
+    <button class="save-btn" id="saveBtn">儲存</button>
   </div>
   <div class="result-btns">
-    <button class="retry-btn" onclick="retryGame()">🔄 再玩一次</button>
-    <button class="home-btn2" onclick="goHome()">🏠 回首頁</button>
+    <button class="retry-btn" id="retryBtn">🔄 再玩一次</button>
+    <button class="home-btn2" id="homeBtn2">🏠 回首頁</button>
   </div>
 </div>
 
@@ -411,7 +411,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   </div>
   <div class="lb-filter" id="lbFilter"></div>
   <div class="lb-list" id="lbList"></div>
-  <button class="back-btn" onclick="goHome()">← 回首頁</button>
+  <button class="back-btn" id="backBtn">← 回首頁</button>
 </div>
 
 <script type="module">
@@ -429,14 +429,16 @@ document.querySelectorAll('button,a,.mode-btn').forEach(el=>{
 });
 
 // ===== STARS =====
-const starsEl=document.getElementById('starsBg');
-for(let i=0;i<120;i++){
-  const s=document.createElement('div');
-  s.className='star';
-  const sz=Math.random()*2.5+.5;
-  s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s`;
-  starsEl.appendChild(s);
-}
+document.addEventListener('DOMContentLoaded', () => {
+  const starsEl=document.getElementById('starsBg');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const sz=Math.random()*2.5+.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s`;
+    starsEl.appendChild(s);
+  }
+});
 
 // ===== DATA =====
 const DATA = {
@@ -740,7 +742,12 @@ function endGame(){
   else if(acc>=65&&score>=150){rank='🥈';title='不錯喔！繼續努力！';}
   document.getElementById('resultRank').textContent=rank;
   document.getElementById('resultTitle').textContent=title;
-  // animate counters
+  // 重置儲存按鈕
+  const saveBtn = document.querySelector('.save-btn');
+  saveBtn.textContent = '儲存';
+  saveBtn.disabled = false;
+  // 自動帶入上次名字
+  prefillName();
   animCount('rScore',0,score,1200);
 }
 
@@ -757,7 +764,7 @@ function animCount(id,from,to,dur){
 
 // ===== FIREBASE SETUP =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, getDocs, query, orderBy, limit, where, startAfter } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
 
 const firebaseConfig = {
@@ -774,84 +781,186 @@ const db = getFirestore(fbApp);
 getAnalytics(fbApp);
 
 // ===== LEADERBOARD =====
+// 記住玩家名字，結算時自動帶入
+let savedPlayerName = '';
+
 async function saveScore(){
-  const name = document.getElementById('playerName').value.trim() || '匿名冒險家';
+  const nameInput = document.getElementById('playerName');
+  const name = nameInput.value.trim() || '匿名冒險家';
+  savedPlayerName = name; // 記住名字
   const saveBtn = document.querySelector('.save-btn');
   saveBtn.textContent = '儲存中...';
   saveBtn.disabled = true;
+
+  const mode = selectedModes[0];
+  // 每個玩家每個模式用固定 document ID（名字+模式），自動覆蓋舊紀錄
+  const docId = `${name}_${mode}`.replace(/[^a-zA-Z0-9_\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/g, '_');
+
   try {
-    await addDoc(collection(db, 'leaderboard'), {
+    const entryRef = doc(db, 'leaderboard', docId);
+    // 先查舊分數，只有更高才更新
+    const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const existing = await getDoc(entryRef);
+    if(existing.exists() && existing.data().score >= score){
+      saveBtn.textContent = `✅ 已是最高分！(${existing.data().score}分)`;
+      return;
+    }
+    await setDoc(entryRef, {
       name,
       score,
       acc: total > 0 ? Math.round(correct / total * 100) : 0,
       streak: maxStreak,
-      mode: selectedModes[0],
+      mode,
       diff: difficulty,
       date: new Date().toLocaleDateString('zh-TW'),
       timestamp: Date.now()
     });
-    saveBtn.textContent = '✅ 已儲存！';
+    saveBtn.textContent = '✅ 排行榜更新！';
   } catch(e) {
+    console.error(e);
     saveBtn.textContent = '❌ 儲存失敗';
     saveBtn.disabled = false;
   }
 }
 
-async function showLeaderboard(){
-  showScreen('lbScreen');
-  await renderLB();
+// 結算畫面顯示時自動帶入上次名字
+function prefillName(){
+  const input = document.getElementById('playerName');
+  if(savedPlayerName){
+    input.value = savedPlayerName;
+    input.placeholder = savedPlayerName;
+  }
 }
 
-async function renderLB(filter=null){
+// 無限滾動狀態
+let lbCurrentFilter = 'hiragana';
+let lbLastDoc = null;
+let lbLoading = false;
+let lbHasMore = true;
+let lbRankOffset = 0;
+const LB_PAGE = 15;
+
+async function showLeaderboard(){
+  showScreen('lbScreen');
+  await renderLB(selectedModes[0]);
+}
+
+async function renderLB(filter='hiragana'){
+  // 切換分頁時重置狀態
+  lbCurrentFilter = filter;
+  lbLastDoc = null;
+  lbHasMore = true;
+  lbRankOffset = 0;
+
   const list = document.getElementById('lbList');
   const filterEl = document.getElementById('lbFilter');
   list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">⏳</div>載入中...</div>`;
 
-  try {
-    const q = query(collection(db, 'leaderboard'), orderBy('score', 'desc'), limit(50));
-    const snapshot = await getDocs(q);
-    let entries = [];
-    snapshot.forEach(doc => entries.push(doc.data()));
+  // 分頁按鈕
+  const tabs = [
+    { key: 'hiragana', label: '🔤 平假名' },
+    { key: 'katakana', label: '🔡 片假名' }
+  ];
+  filterEl.innerHTML = '';
+  tabs.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'lb-filter-btn' + (filter===t.key ? ' active' : '');
+    btn.textContent = t.label;
+    btn.addEventListener('click', () => renderLB(t.key));
+    filterEl.appendChild(btn);
+  });
 
-    // build filter buttons
-    const modes = [...new Set(entries.map(e => e.mode))];
-    filterEl.innerHTML = '';
-    if(modes.length > 1){
-      filterEl.innerHTML = `<button class="lb-filter-btn${filter===null?' active':''}" onclick="renderLB(null)">全部</button>`;
-      modes.forEach(m => {
-        filterEl.innerHTML += `<button class="lb-filter-btn${filter===m?' active':''}" onclick="renderLB('${m}')">${m}</button>`;
-      });
+  list.innerHTML = '';
+  await loadMoreLB();
+
+  // 綁定滾動事件（lbScreen 本身可滾動）
+  const screen = document.getElementById('lbScreen');
+  screen.onscroll = () => {
+    if(screen.scrollTop + screen.clientHeight >= screen.scrollHeight - 100){
+      loadMoreLB();
+    }
+  };
+}
+
+async function loadMoreLB(){
+  if(lbLoading || !lbHasMore) return;
+  lbLoading = true;
+
+  const list = document.getElementById('lbList');
+
+  // 顯示載入指示
+  let loader = document.getElementById('lbLoader');
+  if(!loader){
+    loader = document.createElement('div');
+    loader.id = 'lbLoader';
+    loader.className = 'lb-empty';
+    loader.style.cssText = 'padding:16px;font-size:.85rem;';
+    loader.innerHTML = '⏳ 載入中...';
+    list.appendChild(loader);
+  }
+
+  try {
+    let q;
+    if(lbLastDoc){
+      q = query(collection(db,'leaderboard'), where('mode','==',lbCurrentFilter), orderBy('score','desc'), startAfter(lbLastDoc), limit(LB_PAGE));
+    } else {
+      q = query(collection(db,'leaderboard'), where('mode','==',lbCurrentFilter), orderBy('score','desc'), limit(LB_PAGE));
     }
 
-    const filtered = filter ? entries.filter(e => e.mode === filter) : entries;
-    list.innerHTML = '';
-    if(filtered.length === 0){
+    const snapshot = await getDocs(q);
+    loader.remove();
+
+    if(snapshot.empty && lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">🎮</div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
+      lbHasMore = false;
+      lbLoading = false;
       return;
     }
+
+    if(snapshot.size < LB_PAGE) lbHasMore = false;
+    lbLastDoc = snapshot.docs[snapshot.docs.length - 1];
+
     const rankClasses = ['rank-1','rank-2','rank-3'];
-    const rankNums = ['1','2','3'];
-    filtered.slice(0,20).forEach((entry, i) => {
+    snapshot.docs.forEach((d, i) => {
+      const entry = d.data();
+      const globalIndex = lbRankOffset + i;
       const row = document.createElement('div');
-      row.className = 'lb-row' + (i < 3 ? ' ' + rankClasses[i] : '');
-      row.style.animationDelay = `${i * .05}s`;
+      row.className = 'lb-row' + (globalIndex < 3 ? ' ' + rankClasses[globalIndex] : '');
+      row.style.animationDelay = `${i * .04}s`;
       const diffLabel = {normal:'普通', hard:'困難', blitz:'閃電'}[entry.diff] || entry.diff;
       row.innerHTML = `
-        <div class="lb-rank-badge">${i < 3 ? rankNums[i] : i+1}</div>
+        <div class="lb-rank-badge">${globalIndex + 1}</div>
         <div class="lb-info">
           <div class="lb-name">${entry.name}</div>
           <div class="lb-meta">正確率 ${entry.acc}% · 最高連擊 ×${entry.streak} · ${entry.date}</div>
         </div>
         <div class="lb-right">
           <div class="lb-score">${entry.score}</div>
-          <div class="lb-diff">${entry.mode} · ${diffLabel}</div>
+          <div class="lb-diff">${diffLabel}</div>
         </div>
       `;
       list.appendChild(row);
     });
+
+    lbRankOffset += snapshot.size;
+
+    // 沒有更多了
+    if(!lbHasMore && lbRankOffset > 0){
+      const end = document.createElement('div');
+      end.className = 'lb-empty';
+      end.style.cssText = 'padding:16px;font-size:.8rem;';
+      end.textContent = `── 共 ${lbRankOffset} 位冒險家 ──`;
+      list.appendChild(end);
+    }
+
   } catch(e) {
-    list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">❌</div>載入失敗，請稍後再試</div>`;
+    console.error(e);
+    if(loader) loader.remove();
+    if(lbRankOffset === 0){
+      list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">❌</div>載入失敗，請稍後再試</div>`;
+    }
   }
+  lbLoading = false;
 }
 
 // ===== SCREEN MANAGEMENT =====
@@ -861,19 +970,33 @@ function showScreen(id){
 }
 function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); }
 
-// ===== EXPOSE TO WINDOW (needed for onclick in HTML) =====
-window.toggleMode = toggleMode;
-window.setDiff = setDiff;
-window.startGame = startGame;
-window.retryGame = retryGame;
-window.quitGame = quitGame;
-window.saveScore = saveScore;
-window.showLeaderboard = showLeaderboard;
-window.renderLB = renderLB;
-window.goHome = goHome;
-
-// ===== INIT =====
+// ===== INIT & EVENT BINDINGS =====
 showScreen('homeScreen');
+
+// Mode buttons
+document.querySelectorAll('.mode-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>toggleMode(btn));
+});
+
+// Difficulty buttons
+document.querySelectorAll('.diff-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>setDiff(btn));
+});
+
+// Home screen
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('lbBtn').addEventListener('click', showLeaderboard);
+
+// Game screen
+document.getElementById('quitBtn').addEventListener('click', quitGame);
+
+// Result screen
+document.getElementById('saveBtn').addEventListener('click', saveScore);
+document.getElementById('retryBtn').addEventListener('click', retryGame);
+document.getElementById('homeBtn2').addEventListener('click', goHome);
+
+// Leaderboard screen
+document.getElementById('backBtn').addEventListener('click', goHome);
 </script>
 </body>
 </html>
