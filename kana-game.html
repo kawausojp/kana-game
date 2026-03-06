@@ -748,6 +748,10 @@ function endGame(){
   saveBtn.disabled = false;
   // 自動帶入上次名字
   prefillName();
+  // 有記住名字就自動儲存
+  if(savedPlayerName){
+    saveScore();
+  }
   animCount('rScore',0,score,1200);
 }
 
