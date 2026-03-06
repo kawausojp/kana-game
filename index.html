@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -748,6 +749,10 @@ function endGame(){
   saveBtn.disabled = false;
   // 自動帶入上次名字
   prefillName();
+  // 有記住名字就自動儲存
+  if(savedPlayerName){
+    saveScore();
+  }
   animCount('rScore',0,score,1200);
 }
 
@@ -786,35 +791,46 @@ let savedPlayerName = '';
 
 async function saveScore(){
   const nameInput = document.getElementById('playerName');
-  const name = nameInput.value.trim() || '匿名冒險家';
-  savedPlayerName = name; // 記住名字
+  const name = nameInput.value.trim() || savedPlayerName || '匿名冒險家';
   const saveBtn = document.querySelector('.save-btn');
   saveBtn.textContent = '儲存中...';
   saveBtn.disabled = true;
 
   const mode = selectedModes[0];
-  // 每個玩家每個模式用固定 document ID（名字+模式），自動覆蓋舊紀錄
   const docId = `${name}_${mode}`.replace(/[^a-zA-Z0-9_\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/g, '_');
 
   try {
     const entryRef = doc(db, 'leaderboard', docId);
-    // 先查舊分數，只有更高才更新
     const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const existing = await getDoc(entryRef);
-    if(existing.exists() && existing.data().score >= score){
-      saveBtn.textContent = `✅ 已是最高分！(${existing.data().score}分)`;
-      return;
+
+    if(existing.exists()){
+      const isMyRecord = savedPlayerName === name;
+      if(!isMyRecord){
+        // 同名但不是本人 → 拒絕
+        saveBtn.textContent = '儲存';
+        saveBtn.disabled = false;
+        nameInput.value = '';
+        nameInput.placeholder = '此名稱已被使用，請換一個！';
+        nameInput.focus();
+        return;
+      }
+      if(existing.data().score >= score){
+        saveBtn.textContent = `✅ 已是最高分！(${existing.data().score}分)`;
+        return;
+      }
     }
+
     await setDoc(entryRef, {
-      name,
-      score,
+      name, score,
       acc: total > 0 ? Math.round(correct / total * 100) : 0,
-      streak: maxStreak,
-      mode,
+      streak: maxStreak, mode,
       diff: difficulty,
       date: new Date().toLocaleDateString('zh-TW'),
       timestamp: Date.now()
     });
+    savedPlayerName = name;
+    localStorage.setItem('kanaPlayerName', name);
     saveBtn.textContent = '✅ 排行榜更新！';
   } catch(e) {
     console.error(e);
@@ -826,9 +842,11 @@ async function saveScore(){
 // 結算畫面顯示時自動帶入上次名字
 function prefillName(){
   const input = document.getElementById('playerName');
-  if(savedPlayerName){
-    input.value = savedPlayerName;
-    input.placeholder = savedPlayerName;
+  const name = savedPlayerName || localStorage.getItem('kanaPlayerName') || '';
+  if(name){
+    savedPlayerName = name;
+    input.value = name;
+    input.placeholder = name;
   }
 }
 
