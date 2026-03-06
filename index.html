@@ -745,17 +745,21 @@ function endGame(){
 
   const saveBtn = document.querySelector('.save-btn');
   const nameRow = document.querySelector('.result-name-row');
+  const nameInput = document.getElementById('playerName');
+
+  // 永遠顯示輸入欄，但如果有記住名字就自動帶入
+  nameRow.style.display = 'flex';
+  saveBtn.textContent = '儲存';
+  saveBtn.disabled = false;
+  // 清除上次的訊息
+  const msgEl = document.getElementById('autoSaveMsg');
+  if(msgEl) msgEl.textContent = '';
 
   if(savedPlayerName){
-    // 已有名字 → 自動儲存，隱藏輸入欄
-    nameRow.style.display = 'none';
-    saveBtn.textContent = '儲存中...';
-    saveScore();
+    nameInput.value = savedPlayerName;
   } else {
-    // 第一次 → 顯示輸入欄讓玩家填名字
-    nameRow.style.display = 'flex';
-    saveBtn.textContent = '儲存';
-    saveBtn.disabled = false;
+    nameInput.value = '';
+    nameInput.placeholder = '輸入你的名字存入排行榜 🏆';
   }
 
   animCount('rScore',0,score,1200);
