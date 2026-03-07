@@ -56,20 +56,34 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   animation:logoPulse 3s ease-in-out infinite;
 }
 @keyframes logoPulse { 0%,100%{filter:drop-shadow(0 0 20px var(--glow-pink))} 50%{filter:drop-shadow(0 0 50px var(--glow-pink)) drop-shadow(0 0 80px var(--glow-teal))} }
-.home-sub { color:var(--matcha); font-size:1rem; margin-bottom:40px; letter-spacing:.2em; text-align:center; opacity:.8; }
-.mode-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; width:100%; max-width:340px; margin-bottom:28px; }
-.mode-btn {
+.home-sub { color:var(--matcha); font-size:1rem; margin-bottom:24px; letter-spacing:.2em; text-align:center; opacity:.8; }
+
+/* 平假名／片假名切換 */
+.kana-tabs { display:flex; gap:10px; width:100%; max-width:420px; margin-bottom:16px; }
+.kana-tab {
+  flex:1; padding:11px 0; border-radius:50px;
   background:var(--card); border:2px solid var(--card2);
-  border-radius:16px; padding:18px 12px; text-align:center;
-  transition:all .2s; position:relative; overflow:hidden;
+  color:var(--muted); font-size:.95rem; font-weight:700;
+  font-family:'Zen Maru Gothic',sans-serif; cursor:pointer; transition:all .2s;
 }
-.mode-btn::before { content:''; position:absolute; inset:0; opacity:0; transition:opacity .2s; }
-.mode-btn:hover { transform:translateY(-4px); border-color:var(--sakura); box-shadow:0 8px 30px var(--glow-pink); }
-.mode-btn:hover::before { opacity:1; background:radial-gradient(ellipse at center,rgba(255,107,157,.1),transparent); }
-.mode-btn.selected { border-color:var(--matcha); background:rgba(0,229,200,.1); box-shadow:0 0 20px var(--glow-teal); }
-.mode-icon { font-size:2rem; margin-bottom:6px; color:var(--text); text-shadow:0 0 16px rgba(255,255,255,.5); }
-.mode-name { font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:.95rem; color:var(--text); text-shadow:0 0 12px rgba(255,255,255,.3); }
-.mode-count { font-size:.75rem; color:rgba(255,255,255,.45); margin-top:2px; }
+.kana-tab.active { border-color:var(--sakura); color:var(--sakura); background:rgba(255,107,157,.1); box-shadow:0 0 18px rgba(255,107,157,.25); }
+
+/* 4個關卡格 */
+.stage-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:420px; margin-bottom:24px; }
+.stage-btn {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:18px 12px; border-radius:18px;
+  background:var(--card); border:2px solid var(--card2);
+  color:var(--text); cursor:pointer; transition:all .2s; position:relative; overflow:hidden;
+}
+.stage-btn::before { content:''; position:absolute; inset:0; opacity:0; transition:opacity .2s; }
+.stage-btn:hover { transform:translateY(-3px); border-color:var(--purple); box-shadow:0 8px 28px rgba(167,139,250,.2); }
+.stage-btn:hover::before { opacity:1; background:radial-gradient(ellipse at center,rgba(167,139,250,.08),transparent); }
+.stage-btn.selected { border-color:var(--purple); background:rgba(167,139,250,.12); box-shadow:0 0 22px rgba(167,139,250,.3); }
+.stage-btn.all-stage.selected { border-color:var(--yuzu); background:rgba(255,217,61,.08); box-shadow:0 0 22px rgba(255,217,61,.25); }
+.stage-icon { font-size:1.8rem; font-family:'Hiragino Sans','Yu Gothic','Zen Maru Gothic',sans-serif; line-height:1; color:var(--matcha); text-shadow:0 0 14px rgba(0,229,200,.5); }
+.stage-name { font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:.9rem; color:var(--text); }
+.stage-desc { font-size:.68rem; color:var(--muted); }
 
 .diff-row { display:flex; gap:10px; margin-bottom:28px; }
 .diff-btn {
@@ -265,14 +279,26 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   width:100%; max-width:520px;
 }
 .lb-empty-icon { font-size:3rem; margin-bottom:12px; }
-.lb-filter { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:16px; width:100%; max-width:520px; }
+.lb-filter { display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:16px; width:100%; max-width:520px; }
+.lb-kana-tabs { display:flex; gap:8px; }
 .lb-filter-btn {
-  padding:7px 18px; border-radius:50px;
+  padding:7px 22px; border-radius:50px;
   background:var(--card); border:1.5px solid rgba(255,255,255,.08);
-  color:var(--muted); font-size:.78rem; font-weight:700; transition:all .2s;
+  color:var(--muted); font-size:.82rem; font-weight:700; transition:all .2s;
 }
 .lb-filter-btn.active { border-color:var(--sakura); color:var(--sakura); background:rgba(255,107,157,.1); }
 .lb-filter-btn:hover:not(.active) { border-color:rgba(255,255,255,.2); color:var(--text); }
+.lb-stage-select {
+  background:var(--card); border:1.5px solid rgba(255,255,255,.12);
+  color:var(--text); border-radius:12px; padding:9px 16px;
+  font-size:.85rem; font-weight:700; font-family:'Zen Maru Gothic',sans-serif;
+  width:100%; max-width:300px; cursor:pointer; outline:none; transition:all .2s;
+  appearance:none; -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 14px center;
+}
+.lb-stage-select:focus { border-color:var(--purple); box-shadow:0 0 12px rgba(167,139,250,.2); }
+.lb-stage-select option { background:#1a1625; color:var(--text); }
 
 /* SCREEN FLASH */
 .flash { position:fixed;inset:0;pointer-events:none;z-index:200;opacity:0;transition:opacity .15s; }
@@ -315,16 +341,33 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   <div class="home-logo">五十音<br>大冒險</div>
   <div class="home-sub">GO · GO · にほんご！</div>
 
-  <div class="mode-grid" id="modeGrid">
-    <button class="mode-btn selected" data-mode="hiragana">
-      <div class="mode-icon">ひ</div>
-      <div class="mode-name">平假名</div>
-      <div class="mode-count">46 + 濁音拗音</div>
+  <!-- 平假名／片假名 -->
+  <div class="kana-tabs">
+    <button class="kana-tab active" data-kana="hiragana">ひ 平假名</button>
+    <button class="kana-tab" data-kana="katakana">カ 片假名</button>
+  </div>
+
+  <!-- 4個關卡 -->
+  <div class="stage-grid">
+    <button class="stage-btn selected" data-stage="seion">
+      <div class="stage-icon">あ</div>
+      <div class="stage-name">清音</div>
+      <div class="stage-desc">46個基本假名</div>
     </button>
-    <button class="mode-btn" data-mode="katakana">
-      <div class="mode-icon">カ</div>
-      <div class="mode-name">片假名</div>
-      <div class="mode-count">46 + 濁音拗音</div>
+    <button class="stage-btn" data-stage="dakuten">
+      <div class="stage-icon">が</div>
+      <div class="stage-name">濁音</div>
+      <div class="stage-desc">が行～ど行</div>
+    </button>
+    <button class="stage-btn" data-stage="youon">
+      <div class="stage-icon">きゃ</div>
+      <div class="stage-name">拗音</div>
+      <div class="stage-desc">きゃ・しゃ・ちゃ...</div>
+    </button>
+    <button class="stage-btn all-stage" data-stage="all">
+      <div class="stage-icon">∞</div>
+      <div class="stage-name">全部混合</div>
+      <div class="stage-desc">清音＋濁音＋拗音</div>
     </button>
   </div>
 
@@ -502,7 +545,9 @@ const DATA = {
 };
 
 // ===== STATE =====
-let selectedModes = ['hiragana'];
+let selectedKana = 'hiragana';
+let selectedStage = 'seion';
+let selectedModes = ['hiragana']; // legacy compat
 let difficulty = 'normal';
 let timerMax = 60;
 let questions = [], qIndex = 0;
@@ -557,11 +602,16 @@ function scorePopup(x,y,pts,isCorrect){
   setTimeout(()=>el.remove(),800);
 }
 
-// ===== MODE/DIFF TOGGLES =====
-function toggleMode(btn){
-  const mode=btn.dataset.mode;
-  selectedModes=[mode];
-  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('selected'));
+// ===== KANA / STAGE / DIFF TOGGLES =====
+function toggleKana(btn){
+  selectedKana = btn.dataset.kana;
+  selectedModes = [selectedKana];
+  document.querySelectorAll('.kana-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function toggleStage(btn){
+  selectedStage = btn.dataset.stage;
+  document.querySelectorAll('.stage-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
 }
 function setDiff(btn){
@@ -572,11 +622,16 @@ function setDiff(btn){
 
 // ===== BUILD QUESTIONS =====
 function buildQuestions(){
-  let pool=[];
-  selectedModes.forEach(m=>{
-    if(DATA[m]) pool=[...pool,...DATA[m]];
-  });
-  pool=pool.filter((v,i,a)=>a.findIndex(x=>x.char===v.char)===i);
+  let pool = DATA[selectedKana] || [];
+  if(selectedStage === 'seion'){
+    pool = pool.filter(q => q.type === '平假名' || q.type === '片假名');
+  } else if(selectedStage === 'dakuten'){
+    pool = pool.filter(q => q.type === '濁音' || q.type === '半濁音');
+  } else if(selectedStage === 'youon'){
+    pool = pool.filter(q => q.type === '拗音' || q.type === '濁拗音' || q.type === '半濁拗音');
+  }
+  // 'all' → 全部不篩選
+  pool = pool.filter((v,i,a)=>a.findIndex(x=>x.char===v.char)===i);
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
   return pool.slice(0,40);
 }
@@ -795,7 +850,7 @@ async function saveScore(){
   saveBtn.textContent = '儲存中...';
   saveBtn.disabled = true;
 
-  const mode = selectedModes[0];
+  const mode = `${selectedKana}_${selectedStage}`;
   const docId = `${name}_${mode}`.replace(/[^a-zA-Z0-9_\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/g, '_');
 
   try {
@@ -859,12 +914,11 @@ const LB_PAGE = 15;
 
 async function showLeaderboard(){
   showScreen('lbScreen');
-  await renderLB(selectedModes[0]);
+  await renderLB(selectedKana, selectedStage);
 }
 
-async function renderLB(filter='hiragana'){
-  // 切換分頁時重置狀態
-  lbCurrentFilter = filter;
+async function renderLB(kana='hiragana', stage='seion'){
+  lbCurrentFilter = `${kana}_${stage}`;
   lbLastDoc = null;
   lbHasMore = true;
   lbRankOffset = 0;
@@ -873,24 +927,47 @@ async function renderLB(filter='hiragana'){
   const filterEl = document.getElementById('lbFilter');
   list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">⏳</div>載入中...</div>`;
 
-  // 分頁按鈕
-  const tabs = [
-    { key: 'hiragana', label: '🔤 平假名' },
-    { key: 'katakana', label: '🔡 片假名' }
-  ];
+  // 建立 UI
   filterEl.innerHTML = '';
-  tabs.forEach(t => {
+
+  // 平假名／片假名 tab
+  const kanaRow = document.createElement('div');
+  kanaRow.className = 'lb-kana-tabs';
+  [{ key:'hiragana', label:'ひ 平假名' }, { key:'katakana', label:'カ 片假名' }].forEach(k => {
     const btn = document.createElement('button');
-    btn.className = 'lb-filter-btn' + (filter===t.key ? ' active' : '');
-    btn.textContent = t.label;
-    btn.addEventListener('click', () => renderLB(t.key));
-    filterEl.appendChild(btn);
+    btn.className = 'lb-filter-btn' + (kana===k.key ? ' active' : '');
+    btn.textContent = k.label;
+    btn.addEventListener('click', () => {
+      const sel = document.getElementById('lbStageSelect');
+      renderLB(k.key, sel ? sel.value : stage);
+    });
+    kanaRow.appendChild(btn);
   });
+  filterEl.appendChild(kanaRow);
+
+  // 關卡下拉
+  const stages = [
+    { key:'seion',   label:'清音（基本46音）' },
+    { key:'dakuten', label:'濁音（が行～ど行）' },
+    { key:'youon',   label:'拗音（きゃ・しゃ...）' },
+    { key:'all',     label:'全部混合' }
+  ];
+  const sel = document.createElement('select');
+  sel.id = 'lbStageSelect';
+  sel.className = 'lb-stage-select';
+  stages.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.key;
+    opt.textContent = s.label;
+    if(s.key === stage) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener('change', () => renderLB(kana, sel.value));
+  filterEl.appendChild(sel);
 
   list.innerHTML = '';
   await loadMoreLB();
 
-  // 綁定滾動事件（lbScreen 本身可滾動）
   const screen = document.getElementById('lbScreen');
   screen.onscroll = () => {
     if(screen.scrollTop + screen.clientHeight >= screen.scrollHeight - 100){
@@ -990,9 +1067,14 @@ function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); }
 // ===== INIT & EVENT BINDINGS =====
 showScreen('homeScreen');
 
-// Mode buttons
-document.querySelectorAll('.mode-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>toggleMode(btn));
+// Kana tabs
+document.querySelectorAll('.kana-tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>toggleKana(btn));
+});
+
+// Stage buttons
+document.querySelectorAll('.stage-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>toggleStage(btn));
 });
 
 // Difficulty buttons
