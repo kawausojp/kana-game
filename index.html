@@ -34,10 +34,18 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .star { position:absolute;background:white;border-radius:50%;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s); }
 @keyframes twinkle { 0%,100%{opacity:.1;transform:scale(1)} 50%{opacity:.8;transform:scale(1.3)} }
 
-/* PARTICLES */
-#particles { position:fixed;inset:0;pointer-events:none;z-index:1; }
-.particle { position:absolute;pointer-events:none;animation:particleFly var(--dur,2s) ease-out forwards; font-size:var(--fs,1.2rem); }
-@keyframes particleFly { 0%{opacity:1;transform:translate(0,0) scale(1) rotate(0deg)} 100%{opacity:0;transform:translate(var(--tx,0px),var(--ty,-80px)) scale(.3) rotate(360deg)} }
+/* PARTICLES - water splash */
+#particles { position:fixed;inset:0;pointer-events:none;z-index:100; }
+.splash-ring { position:absolute; border-radius:50%; pointer-events:none; transform:translate(-50%,-50%) scale(0); animation:splashRing var(--dur,.6s) ease-out forwards; }
+@keyframes splashRing {
+  0%   { transform:translate(-50%,-50%) scale(0); opacity:.9; }
+  100% { transform:translate(-50%,-50%) scale(1); opacity:0; }
+}
+.splash-drop { position:absolute; border-radius:50%; pointer-events:none; animation:splashDrop var(--dur,.7s) cubic-bezier(.2,.8,.4,1) forwards; }
+@keyframes splashDrop {
+  0%   { transform:translate(0,0) scale(1); opacity:.95; }
+  100% { transform:translate(var(--tx,0px),var(--ty,-60px)) scale(0); opacity:0; }
+}
 
 /* LAYOUT */
 .screen { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;min-height:100vh;transition:opacity .4s,transform .4s;z-index:10; }
@@ -460,10 +468,6 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
       <div class="stage-icon">∞</div>
       <div class="stage-name">混戰模式</div>
     </button>
-    <button class="stage-btn vocab-stage" data-stage="vocab">
-      <div class="stage-icon">文</div>
-      <div class="stage-name">字彙</div>
-    </button>
   </div>
 
   <div class="diff-row">
@@ -723,20 +727,65 @@ function sfxWrong(){playTone(200,.3,'sawtooth',.1);}
 function sfxCombo(){playTone(880,.05);setTimeout(()=>playTone(988,.05),60);setTimeout(()=>playTone(1047,.15),120);}
 function sfxTick(){playTone(440,.05,'square',.05);}
 
-// ===== PARTICLES =====
+// ===== WATER SPLASH PARTICLES =====
 const pEl=document.getElementById('particles');
 function spawnParticles(x,y,isCorrect){
-  const emojis=isCorrect?['✨','🌸','⭐','💫','🎉']:['💥','😅','❌'];
-  for(let i=0;i<6;i++){
-    const p=document.createElement('div');
-    p.className='particle';
-    const angle=Math.random()*360, dist=60+Math.random()*60;
-    const tx=Math.cos(angle*Math.PI/180)*dist, ty=Math.sin(angle*Math.PI/180)*dist-40;
-    p.style.cssText=`left:${x}px;top:${y}px;--tx:${tx}px;--ty:${ty}px;--dur:${.6+Math.random()*.4}s;--fs:${1+Math.random()}rem`;
-    p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
-    pEl.appendChild(p);
-    setTimeout(()=>p.remove(),1000);
+  const color = isCorrect ? ['#00e5c8','#7fffef','#a0fff5','#ffffff'] : ['#ff6b6b','#ff9f9f','#ffcccc','#ffffff'];
+
+  // 外擴漣漪環
+  for(let r=0;r<2;r++){
+    const ring = document.createElement('div');
+    ring.className = 'splash-ring';
+    const size = 24 + r*28;
+    ring.style.cssText = `
+      left:${x}px; top:${y}px;
+      width:${size}px; height:${size}px;
+      border: 2px solid ${color[r]};
+      --dur:${.45+r*.18}s;
+      animation-delay:${r*.06}s;
+      box-shadow: 0 0 8px ${color[r]}88;
+    `;
+    pEl.appendChild(ring);
+    setTimeout(()=>ring.remove(), 700+r*200);
   }
+
+  // 水滴飛濺
+  const dropCount = 8;
+  for(let i=0;i<dropCount;i++){
+    const drop = document.createElement('div');
+    drop.className = 'splash-drop';
+    const angle = (i/dropCount)*Math.PI*2 + Math.random()*.4;
+    const dist = 30 + Math.random()*50;
+    const tx = Math.cos(angle)*dist;
+    const ty = Math.sin(angle)*dist - 20;
+    const sz = 4 + Math.random()*6;
+    const c = color[Math.floor(Math.random()*color.length)];
+    drop.style.cssText = `
+      left:${x}px; top:${y}px;
+      width:${sz}px; height:${sz}px;
+      background:${c};
+      box-shadow: 0 0 6px ${c};
+      --tx:${tx}px; --ty:${ty}px;
+      --dur:${.4+Math.random()*.35}s;
+      animation-delay:${Math.random()*.08}s;
+      transform:translate(-50%,-50%);
+    `;
+    pEl.appendChild(drop);
+    setTimeout(()=>drop.remove(), 900);
+  }
+
+  // 中心閃光
+  const flash = document.createElement('div');
+  flash.className = 'splash-ring';
+  flash.style.cssText = `
+    left:${x}px; top:${y}px;
+    width:12px; height:12px;
+    background:${color[3]};
+    box-shadow: 0 0 12px ${color[0]}, 0 0 24px ${color[0]};
+    --dur:.3s;
+  `;
+  pEl.appendChild(flash);
+  setTimeout(()=>flash.remove(), 400);
 }
 
 function scorePopup(x,y,pts,isCorrect){
@@ -1129,6 +1178,12 @@ async function renderLB(kana='hiragana', stage='seion'){
 
   const list = document.getElementById('lbList');
   const filterEl = document.getElementById('lbFilter');
+
+  // 平滑淡出現有內容
+  list.style.transition = 'opacity .2s ease';
+  list.style.opacity = '0';
+  await new Promise(r => setTimeout(r, 200));
+
   list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>載入中...</div>`;
 
   filterEl.innerHTML = '';
@@ -1207,8 +1262,13 @@ async function loadMoreLB(){
     const snapshot = await getDocs(q);
     loader.remove();
 
+    // 淡入
+    list.style.opacity = '0';
+    list.style.transition = 'opacity .25s ease';
+
     if(snapshot.empty && lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
+      requestAnimationFrame(() => { list.style.opacity = '1'; });
       lbHasMore = false;
       lbLoading = false;
       return;
@@ -1240,6 +1300,8 @@ async function loadMoreLB(){
     });
 
     lbRankOffset += snapshot.size;
+    // 淡入新內容
+    requestAnimationFrame(() => { list.style.opacity = '1'; });
 
     // 沒有更多了
     if(!lbHasMore && lbRankOffset > 0){
