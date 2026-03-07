@@ -35,19 +35,19 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .click-ripple {
   position:fixed; pointer-events:none; z-index:9997;
   border-radius:50%; transform:translate(-50%,-50%) scale(0);
-  animation:clickRipple var(--dur,.55s) ease-out forwards;
+  animation:clickRipple var(--dur,.35s) ease-out forwards;
 }
 @keyframes clickRipple {
-  0%   { transform:translate(-50%,-50%) scale(0);   opacity:.9; }
+  0%   { transform:translate(-50%,-50%) scale(0);   opacity:1; }
   100% { transform:translate(-50%,-50%) scale(1);   opacity:0;  }
 }
 .click-drop {
   position:fixed; pointer-events:none; z-index:9997;
   border-radius:50%;
-  animation:clickDrop var(--dur,.5s) cubic-bezier(.2,.8,.3,1) forwards;
+  animation:clickDrop var(--dur,.4s) cubic-bezier(.15,.8,.25,1) forwards;
 }
 @keyframes clickDrop {
-  0%   { opacity:.9; transform:translate(-50%,-50%) scale(1); }
+  0%   { opacity:1;  transform:translate(-50%,-50%) scale(1.2); }
   100% { opacity:0;  transform:translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); }
 }
 
@@ -423,28 +423,28 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   position:fixed; top:50%; left:50%;
   transform:translate(-50%,-50%) scale(.9);
   z-index:500; pointer-events:none;
-  background:rgba(14,10,30,.6);
-  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
-  border:1px solid rgba(167,139,250,.2);
-  border-radius:24px; padding:16px 28px 16px 18px;
-  display:flex; align-items:center; gap:12px;
-  box-shadow:0 12px 48px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04) inset;
-  animation:toastShow 2.2s cubic-bezier(.22,1,.36,1) forwards;
+  background:rgba(10,7,22,.45);
+  backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
+  border:1px solid rgba(167,139,250,.15);
+  border-radius:24px; padding:14px 24px 14px 16px;
+  display:flex; align-items:center; gap:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.03) inset;
+  animation:toastShow 1.6s cubic-bezier(.22,1,.36,1) forwards;
   white-space:nowrap;
 }
 .weak-toast-icon {
-  width:32px; height:32px; border-radius:10px; flex-shrink:0;
-  background:rgba(167,139,250,.12); border:1px solid rgba(167,139,250,.2);
+  width:28px; height:28px; border-radius:8px; flex-shrink:0;
+  background:rgba(167,139,250,.1); border:1px solid rgba(167,139,250,.15);
   display:flex; align-items:center; justify-content:center;
 }
-.weak-toast-icon svg { width:15px; height:15px; stroke:var(--purple); fill:none; stroke-width:2; }
-.weak-toast-text { font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:.85rem; color:rgba(255,255,255,.75); line-height:1.4; }
-.weak-toast-text span { color:var(--sakura); font-size:1em; }
+.weak-toast-icon svg { width:13px; height:13px; stroke:rgba(167,139,250,.8); fill:none; stroke-width:2; }
+.weak-toast-text { font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:.8rem; color:rgba(255,255,255,.5); line-height:1.4; }
+.weak-toast-text span { color:rgba(255,107,157,.8); }
 @keyframes toastShow {
-  0%   { opacity:0; transform:translate(-50%,-50%) scale(.88); }
-  14%  { opacity:1; transform:translate(-50%,-50%) scale(1); }
-  65%  { opacity:1; transform:translate(-50%,-50%) scale(1); }
-  100% { opacity:0; transform:translate(-50%,-50%) scale(.94) translateY(-6px); }
+  0%   { opacity:0; transform:translate(-50%,-50%) scale(.9); }
+  15%  { opacity:1; transform:translate(-50%,-50%) scale(1); }
+  60%  { opacity:1; }
+  100% { opacity:0; transform:translate(-50%,-50%) scale(.96) translateY(-4px); }
 }
 
 /* LB LIST slide transition */
@@ -463,44 +463,68 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 /* QUIT CONFIRM MODAL */
 .quit-modal-overlay {
   position:fixed; inset:0; z-index:600;
-  background:rgba(8,6,18,.6);
-  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  background:rgba(6,4,14,.5);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
   display:flex; align-items:center; justify-content:center;
-  opacity:0; pointer-events:none; transition:opacity .25s;
+  opacity:0; pointer-events:none; transition:opacity .3s ease;
 }
 .quit-modal-overlay.show { opacity:1; pointer-events:all; }
 .quit-modal {
-  background:linear-gradient(160deg, rgba(35,28,58,.98) 0%, rgba(20,16,38,.98) 100%);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:28px; padding:36px 32px 28px;
-  width:min(340px, 90vw); text-align:center;
-  box-shadow:0 24px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.05) inset;
-  transform:translateY(16px) scale(.96); transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  position:relative; overflow:hidden;
+  background:rgba(22,16,42,.82);
+  backdrop-filter:blur(32px); -webkit-backdrop-filter:blur(32px);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:32px; padding:40px 32px 28px;
+  width:min(360px, 92vw); text-align:center;
+  box-shadow:0 32px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.04) inset, 0 0 60px rgba(255,80,80,.06);
+  transform:translateY(20px) scale(.95); transition:transform .38s cubic-bezier(.22,1,.36,1), opacity .3s ease;
 }
 .quit-modal-overlay.show .quit-modal { transform:translateY(0) scale(1); }
+
+/* 頂部紅色光暈 */
+.quit-modal::before {
+  content:''; position:absolute; top:-60px; left:50%; transform:translateX(-50%);
+  width:180px; height:120px; border-radius:50%;
+  background:radial-gradient(ellipse, rgba(255,80,80,.18) 0%, transparent 70%);
+  pointer-events:none;
+}
+
 .quit-modal-icon {
-  width:52px; height:52px; border-radius:16px; margin:0 auto 16px;
-  background:rgba(255,107,107,.12); border:1px solid rgba(255,107,107,.2);
+  width:60px; height:60px; border-radius:20px; margin:0 auto 20px;
+  background:rgba(255,90,90,.1);
+  border:1px solid rgba(255,90,90,.18);
+  box-shadow:0 8px 24px rgba(255,80,80,.12), 0 0 0 8px rgba(255,80,80,.04);
   display:flex; align-items:center; justify-content:center;
 }
-.quit-modal-icon svg { width:24px; height:24px; stroke:var(--coral); fill:none; stroke-width:1.8; }
-.quit-modal-title { font-family:'Zen Maru Gothic',sans-serif; font-size:1.2rem; font-weight:900; color:var(--text); margin-bottom:8px; }
-.quit-modal-sub { font-size:.82rem; color:var(--muted); margin-bottom:28px; line-height:1.6; }
+.quit-modal-icon svg { width:26px; height:26px; stroke:rgba(255,120,120,.9); fill:none; stroke-width:1.6; }
+.quit-modal-title {
+  font-family:'Zen Maru Gothic',sans-serif; font-size:1.35rem; font-weight:900;
+  color:rgba(255,255,255,.92); margin-bottom:10px; letter-spacing:.01em;
+}
+.quit-modal-sub {
+  font-size:.8rem; color:rgba(255,255,255,.32); margin-bottom:0; line-height:1.8;
+}
+.quit-modal-divider {
+  width:100%; height:1px; background:rgba(255,255,255,.06);
+  margin:24px 0 20px;
+}
 .quit-modal-btns { display:flex; gap:10px; }
 .quit-cancel-btn {
-  flex:1; padding:13px 0; border-radius:14px;
-  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
-  color:var(--text); font-weight:700; font-size:.9rem; transition:all .2s;
+  flex:1; padding:14px 0; border-radius:16px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.55); font-weight:700; font-size:.88rem;
+  letter-spacing:.02em; transition:all .2s;
 }
-.quit-cancel-btn:hover { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2); }
+.quit-cancel-btn:hover { background:rgba(255,255,255,.09); color:rgba(255,255,255,.8); border-color:rgba(255,255,255,.15); }
 .quit-confirm-btn {
-  flex:1; padding:13px 0; border-radius:14px;
-  background:linear-gradient(135deg, rgba(255,107,107,.8), rgba(200,60,60,.9));
-  border:1px solid rgba(255,107,107,.3); color:white;
-  font-weight:700; font-size:.9rem; transition:all .2s;
-  box-shadow:0 4px 16px rgba(255,107,107,.2);
+  flex:1; padding:14px 0; border-radius:16px;
+  background:linear-gradient(145deg, #e05555 0%, #b83232 100%);
+  border:1px solid rgba(255,120,120,.2); color:rgba(255,255,255,.95);
+  font-weight:700; font-size:.88rem; letter-spacing:.02em; transition:all .22s;
+  box-shadow:0 4px 20px rgba(180,50,50,.35), 0 1px 0 rgba(255,180,180,.15) inset;
 }
-.quit-confirm-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(255,107,107,.35); }
+.quit-confirm-btn:hover { transform:translateY(-1px); box-shadow:0 8px 28px rgba(180,50,50,.45), 0 1px 0 rgba(255,180,180,.15) inset; }
 
 @media(max-width:480px) {
   .screen { padding:20px 16px; }
@@ -550,6 +574,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
     </div>
     <div class="quit-modal-title">確定要離開嗎？</div>
     <div class="quit-modal-sub">遊戲進度將不會被儲存<br>本次冒險就此結束</div>
+    <div class="quit-modal-divider"></div>
     <div class="quit-modal-btns">
       <button class="quit-cancel-btn" id="quitCancelBtn">繼續冒險</button>
       <button class="quit-confirm-btn" id="quitConfirmBtn">離開</button>
@@ -736,30 +761,37 @@ document.querySelectorAll('button,a,.mode-btn').forEach(el=>{
 // 點擊水濺
 document.addEventListener('click', e=>{
   const x=e.clientX, y=e.clientY;
-  const colors=['#ff6b9d','#ffadd0','#ffffff','#c084fc'];
+  const colors=['#ff6b9d','#ff9dd0','#ffffff','#d0aaff'];
 
-  // 漣漪環（2層）
+  // 漣漪環（2層，更粗更亮）
   for(let r=0;r<2;r++){
     const el=document.createElement('div');
     el.className='click-ripple';
-    const sz=18+r*22;
-    el.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;border:1.5px solid ${colors[r]};--dur:${.4+r*.15}s;animation-delay:${r*.05}s;box-shadow:0 0 6px ${colors[r]}66;`;
+    const sz=22+r*26;
+    el.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;border:2px solid ${colors[r]};--dur:${.28+r*.1}s;animation-delay:${r*.04}s;box-shadow:0 0 8px ${colors[r]}, 0 0 16px ${colors[r]}55;`;
     document.body.appendChild(el);
-    setTimeout(()=>el.remove(), 700);
+    setTimeout(()=>el.remove(), 450);
   }
 
-  // 水滴（6顆）
-  for(let i=0;i<6;i++){
+  // 水滴（10顆，更大更遠）
+  for(let i=0;i<10;i++){
     const el=document.createElement('div');
     el.className='click-drop';
-    const angle=(i/6)*Math.PI*2+Math.random()*.5;
-    const dist=18+Math.random()*28;
-    const sz=2.5+Math.random()*3.5;
+    const angle=(i/10)*Math.PI*2+Math.random()*.4;
+    const dist=28+Math.random()*44;
+    const sz=3+Math.random()*5;
     const c=colors[Math.floor(Math.random()*colors.length)];
-    el.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${c};box-shadow:0 0 4px ${c};--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;--dur:${.35+Math.random()*.2}s;animation-delay:${Math.random()*.05}s;`;
+    el.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${c};box-shadow:0 0 6px ${c}, 0 0 12px ${c}88;--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;--dur:${.3+Math.random()*.15}s;animation-delay:${Math.random()*.03}s;`;
     document.body.appendChild(el);
-    setTimeout(()=>el.remove(), 650);
+    setTimeout(()=>el.remove(), 500);
   }
+
+  // 中心白光閃
+  const flash=document.createElement('div');
+  flash.className='click-ripple';
+  flash.style.cssText=`left:${x}px;top:${y}px;width:10px;height:10px;background:white;box-shadow:0 0 12px #fff, 0 0 24px #ff6b9d;--dur:.2s;`;
+  document.body.appendChild(flash);
+  setTimeout(()=>flash.remove(), 250);
 });
 
 // ===== STARS =====
@@ -868,7 +900,7 @@ function updateWeakBanner(){
       <div class="weak-toast-text">上次答錯了 <span>${list.length}</span> 個假名<br>將優先出現在這次練習中</div>
     `;
     document.body.appendChild(toast);
-    setTimeout(()=>toast.remove(), 2300);
+    setTimeout(()=>toast.remove(), 1700);
   }
 }
 
@@ -1312,62 +1344,31 @@ function prefillName(){
 }
 
 // 無限滾動狀態
-let lbCurrentFilter = 'hiragana';
+let lbCurrentFilter = 'hiragana_seion';
 let lbLastDoc = null;
 let lbLoading = false;
 let lbHasMore = true;
 let lbRankOffset = 0;
 const LB_PAGE = 15;
 
-const STAGE_ORDER = ['seion','dakuten','youon','all'];
-let lbCurrentKana = 'hiragana';
-let lbCurrentStage = 'seion';
-
 async function showLeaderboard(){
   showScreen('lbScreen');
-  await renderLB(selectedKana, selectedStage);
+  renderLB('hiragana', 'seion');
 }
 
-async function renderLB(kana='hiragana', stage='seion'){
-  const list = document.getElementById('lbList');
-  const filterEl = document.getElementById('lbFilter');
-
-  // 判斷滑入方向
-  const prevKanaIdx = ['hiragana','katakana'].indexOf(lbCurrentKana);
-  const nextKanaIdx = ['hiragana','katakana'].indexOf(kana);
-  const prevStageIdx = STAGE_ORDER.indexOf(lbCurrentStage);
-  const nextStageIdx = STAGE_ORDER.indexOf(stage);
-  let slideDir = 0; // -1=從右來, 1=從左來
-  if(kana !== lbCurrentKana) slideDir = nextKanaIdx > prevKanaIdx ? -1 : 1;
-  else if(stage !== lbCurrentStage) slideDir = nextStageIdx > prevStageIdx ? -1 : 1;
-
-  lbCurrentKana = kana;
-  lbCurrentStage = stage;
+function renderLB(kana='hiragana', stage='seion'){
   lbCurrentFilter = `${kana}_${stage}`;
   lbLastDoc = null;
   lbHasMore = true;
   lbRankOffset = 0;
   lbLoading = false;
 
-  // 滑出（往反方向）
-  if(slideDir !== 0){
-    list.style.transition = 'opacity .22s ease, transform .25s cubic-bezier(.4,0,.2,1)';
-    list.style.opacity = '0';
-    list.style.transform = `translateX(${slideDir * -36}px)`;
-    await new Promise(r => setTimeout(r, 260));
-  } else {
-    list.classList.add('fading');
-    await new Promise(r => setTimeout(r, 300));
-  }
+  const list = document.getElementById('lbList');
+  const filterEl = document.getElementById('lbFilter');
 
-  // 清空，重置位置（從另一側準備滑入）
   list.innerHTML = '';
-  list.style.transition = 'none';
-  list.style.opacity = '0';
-  list.style.transform = slideDir !== 0 ? `translateX(${slideDir * 36}px)` : 'translateX(0)';
-  list.classList.remove('fading','fading-left');
 
-  // 重建 filter UI
+  // filter UI
   filterEl.innerHTML = '';
   const kanaRow = document.createElement('div');
   kanaRow.className = 'lb-kana-tabs';
@@ -1413,16 +1414,7 @@ async function renderLB(kana='hiragana', stage='seion'){
     document.head.appendChild(s);
   }
 
-  // 滑入
-  requestAnimationFrame(()=>{
-    requestAnimationFrame(()=>{
-      list.style.transition = 'opacity .28s ease, transform .32s cubic-bezier(.22,1,.36,1)';
-      list.style.opacity = '1';
-      list.style.transform = 'translateX(0)';
-    });
-  });
-
-  await loadMoreLB();
+  loadMoreLB();
 
   const screen = document.getElementById('lbScreen');
   screen.onscroll = () => {
@@ -1445,19 +1437,12 @@ async function loadMoreLB(){
     }
 
     const snapshot = await getDocs(q);
-
-    // 移除 loader，短暫淡出後換內容
     const loader = document.getElementById('lbLoader');
     if(loader) loader.remove();
-    list.style.transition = 'opacity .18s ease';
-    list.style.opacity = '0';
-    await new Promise(r => setTimeout(r, 200));
 
     if(snapshot.empty && lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
       lbHasMore = false; lbLoading = false;
-      list.style.transition = 'opacity .25s ease';
-      list.style.opacity = '1';
       return;
     }
 
@@ -1486,7 +1471,6 @@ async function loadMoreLB(){
     });
 
     lbRankOffset += snapshot.size;
-
     if(!lbHasMore && lbRankOffset > 0){
       const end = document.createElement('div');
       end.className = 'lb-empty';
@@ -1495,17 +1479,12 @@ async function loadMoreLB(){
       list.appendChild(end);
     }
 
-    list.style.transition = 'opacity .25s ease';
-    list.style.opacity = '1';
-
   } catch(e) {
     console.error(e);
     const loader = document.getElementById('lbLoader');
     if(loader) loader.remove();
     if(lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>載入失敗，請稍後再試</div>`;
-      list.style.transition = 'opacity .25s ease';
-      list.style.opacity = '1';
     }
   }
   lbLoading = false;
