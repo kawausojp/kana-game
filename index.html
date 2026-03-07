@@ -388,14 +388,76 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .stage-btn.vocab-stage { display:none; }
 .stage-btn.vocab-stage.visible { display:flex; }
 
-/* WEAK REVIEW BANNER */
+/* WEAK REVIEW TOAST — 浮動在畫面中央，慢慢消失 */
 .weak-banner {
-  width:100%; max-width:420px;
-  background:rgba(167,139,250,.1); border:1.5px solid rgba(167,139,250,.3);
-  border-radius:14px; padding:10px 16px; margin-bottom:16px;
-  font-size:.82rem; color:var(--purple); text-align:center; display:none;
+  display:none;
 }
-.weak-banner.show { display:block; }
+.weak-toast {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(1);
+  z-index:500; pointer-events:none;
+  background:rgba(20,16,40,.75);
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(167,139,250,.35);
+  border-radius:20px; padding:18px 32px;
+  text-align:center; color:var(--purple);
+  font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:.92rem;
+  box-shadow:0 8px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(167,139,250,.1) inset;
+  animation:toastShow 3.5s ease forwards;
+  white-space:nowrap;
+}
+.weak-toast span { color:var(--sakura); font-size:1.1em; }
+@keyframes toastShow {
+  0%   { opacity:0; transform:translate(-50%,-50%) scale(.92); }
+  12%  { opacity:1; transform:translate(-50%,-50%) scale(1); }
+  70%  { opacity:1; }
+  100% { opacity:0; transform:translate(-50%,-50%) scale(.96); }
+}
+
+/* FEEDBACK ROW */
+.feedback-row { min-height:32px; text-align:center; font-weight:700; font-size:1rem; margin-top:16px; animation:fadeIn .3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* QUIT CONFIRM MODAL */
+.quit-modal-overlay {
+  position:fixed; inset:0; z-index:600;
+  background:rgba(8,6,18,.6);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity .25s;
+}
+.quit-modal-overlay.show { opacity:1; pointer-events:all; }
+.quit-modal {
+  background:linear-gradient(160deg, rgba(35,28,58,.98) 0%, rgba(20,16,38,.98) 100%);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:28px; padding:36px 32px 28px;
+  width:min(340px, 90vw); text-align:center;
+  box-shadow:0 24px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.05) inset;
+  transform:translateY(16px) scale(.96); transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.quit-modal-overlay.show .quit-modal { transform:translateY(0) scale(1); }
+.quit-modal-icon {
+  width:52px; height:52px; border-radius:16px; margin:0 auto 16px;
+  background:rgba(255,107,107,.12); border:1px solid rgba(255,107,107,.2);
+  display:flex; align-items:center; justify-content:center;
+}
+.quit-modal-icon svg { width:24px; height:24px; stroke:var(--coral); fill:none; stroke-width:1.8; }
+.quit-modal-title { font-family:'Zen Maru Gothic',sans-serif; font-size:1.2rem; font-weight:900; color:var(--text); margin-bottom:8px; }
+.quit-modal-sub { font-size:.82rem; color:var(--muted); margin-bottom:28px; line-height:1.6; }
+.quit-modal-btns { display:flex; gap:10px; }
+.quit-cancel-btn {
+  flex:1; padding:13px 0; border-radius:14px;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  color:var(--text); font-weight:700; font-size:.9rem; transition:all .2s;
+}
+.quit-cancel-btn:hover { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2); }
+.quit-confirm-btn {
+  flex:1; padding:13px 0; border-radius:14px;
+  background:linear-gradient(135deg, rgba(255,107,107,.8), rgba(200,60,60,.9));
+  border:1px solid rgba(255,107,107,.3); color:white;
+  font-weight:700; font-size:.9rem; transition:all .2s;
+  box-shadow:0 4px 16px rgba(255,107,107,.2);
+}
+.quit-confirm-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(255,107,107,.35); }
 
 @media(max-width:480px) {
   .screen { padding:20px 16px; }
@@ -436,6 +498,21 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 <div class="stars" id="starsBg"></div>
 <div id="particles"></div>
 <div class="flash" id="flash"></div>
+
+<!-- QUIT CONFIRM MODAL -->
+<div class="quit-modal-overlay" id="quitModal">
+  <div class="quit-modal">
+    <div class="quit-modal-icon">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </div>
+    <div class="quit-modal-title">確定要離開嗎？</div>
+    <div class="quit-modal-sub">遊戲進度將不會被儲存<br>本次冒險就此結束</div>
+    <div class="quit-modal-btns">
+      <button class="quit-cancel-btn" id="quitCancelBtn">繼續冒險</button>
+      <button class="quit-confirm-btn" id="quitConfirmBtn">離開</button>
+    </div>
+  </div>
+</div>
 
 <!-- HOME -->
 <div class="screen" id="homeScreen">
@@ -486,7 +563,6 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   </div>
 
   <button class="start-btn" id="startBtn">▶ 開始冒險！</button>
-  <div class="weak-banner" id="weakBanner">🎯 上次答錯了 <span id="weakCount">0</span> 個假名，將優先出現在這次練習中！</div>
   <button class="leaderboard-link" id="lbBtn">
     <div class="lb-link-left">
       <div class="lb-link-icon">
@@ -696,13 +772,14 @@ function removeWeak(char){ const k=getWeakKey(); if(!weakSet[k])return; weakSet[
 
 function updateWeakBanner(){
   const list = getWeakList();
-  const banner = document.getElementById('weakBanner');
-  const cnt = document.getElementById('weakCount');
-  if(list.length > 0 && selectedStage !== 'vocab'){
-    cnt.textContent = list.length;
-    banner.classList.add('show');
-  } else {
-    banner.classList.remove('show');
+  if(list.length > 0){
+    // 移除舊的 toast
+    document.querySelectorAll('.weak-toast').forEach(t=>t.remove());
+    const toast = document.createElement('div');
+    toast.className = 'weak-toast';
+    toast.innerHTML = `上次答錯了 <span>${list.length}</span> 個假名，將優先出現！`;
+    document.body.appendChild(toast);
+    setTimeout(()=>toast.remove(), 3600);
   }
 }
 
@@ -1019,7 +1096,10 @@ function flashScreen(cls){
   setTimeout(()=>f.classList.remove('show'),300);
 }
 
-function quitGame(){ clearInterval(timerInterval); endGame(); }
+function quitGame(){
+  const modal = document.getElementById('quitModal');
+  modal.classList.add('show');
+}
 
 // ===== END GAME =====
 function endGame(){
@@ -1339,6 +1419,19 @@ document.getElementById('lbBtn').addEventListener('click', showLeaderboard);
 
 // Game screen
 document.getElementById('quitBtn').addEventListener('click', quitGame);
+document.getElementById('quitCancelBtn').addEventListener('click', ()=>{
+  document.getElementById('quitModal').classList.remove('show');
+});
+document.getElementById('quitConfirmBtn').addEventListener('click', ()=>{
+  document.getElementById('quitModal').classList.remove('show');
+  clearInterval(timerInterval);
+  endGame();
+});
+// 點擊遮罩也可關閉
+document.getElementById('quitModal').addEventListener('click', (e)=>{
+  if(e.target === document.getElementById('quitModal'))
+    document.getElementById('quitModal').classList.remove('show');
+});
 
 // Result screen
 document.getElementById('saveBtn').addEventListener('click', saveScore);
