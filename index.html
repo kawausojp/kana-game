@@ -51,21 +51,12 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   font-weight:900;
   background:linear-gradient(135deg,var(--sakura),var(--purple),var(--matcha));
   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  text-align:center; line-height:1.1; 
-  margin-bottom:24px; /* 增加與副標題的間距 */
+  text-align:center; line-height:1.1; margin-bottom:8px;
   filter:drop-shadow(0 0 30px var(--glow-pink));
   animation:logoPulse 3s ease-in-out infinite;
 }
 @keyframes logoPulse { 0%,100%{filter:drop-shadow(0 0 20px var(--glow-pink))} 50%{filter:drop-shadow(0 0 50px var(--glow-pink)) drop-shadow(0 0 80px var(--glow-teal))} }
-
-.home-sub { 
-  color:var(--matcha); 
-  font-size:1.2rem; /* 稍微加大字體 */
-  margin-bottom:40px; /* 增加與下方選單的間距 */
-  letter-spacing:0.3em; /* 拉開字距增加設計感 */
-  text-align:center; 
-  opacity:0.9; 
-}
+.home-sub { color:var(--matcha); font-size:1rem; margin-bottom:24px; letter-spacing:.2em; text-align:center; opacity:.8; }
 
 /* 平假名／片假名切換 */
 .kana-tabs { display:flex; gap:10px; width:100%; max-width:420px; margin-bottom:16px; }
@@ -160,6 +151,12 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .combo-banner.show { opacity:1; }
 
 .question-area { width:100%; max-width:520px; text-align:center; margin-bottom:20px; }
+.category-tag {
+  display:inline-block; padding:4px 14px; border-radius:20px;
+  font-size:.72rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  margin-bottom:20px;
+}
+
 .kana-card {
   background:var(--card);
   border:2px solid rgba(255,255,255,.08);
@@ -189,26 +186,122 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   font-family:'Noto Sans TC',sans-serif; font-size:1.05rem; font-weight:700;
   transition:all .18s; position:relative; overflow:hidden;
 }
+.opt-btn::after { content:''; position:absolute; inset:0; opacity:0; border-radius:14px; transition:opacity .2s; }
+.opt-btn:hover:not(:disabled) { border-color:var(--purple); box-shadow:0 0 20px rgba(167,139,250,.3); transform:translateY(-2px); }
+.opt-btn:hover:not(:disabled)::after { opacity:1; background:rgba(167,139,250,.08); }
 .opt-btn.correct-anim { border-color:var(--matcha)!important; background:rgba(0,229,200,.15)!important; color:var(--matcha)!important; box-shadow:0 0 30px var(--glow-teal)!important; animation:correctPulse .5s ease; }
 .opt-btn.wrong-anim { border-color:var(--coral)!important; background:rgba(255,107,107,.15)!important; color:var(--coral)!important; animation:wrongShake .4s ease; }
 @keyframes correctPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
 @keyframes wrongShake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
 
-.feedback-row { min-height:32px; text-align:center; font-weight:700; font-size:1rem; margin-top:4px; }
+.feedback-row { min-height:32px; text-align:center; font-weight:700; font-size:1rem; margin-top:4px; animation:fadeIn .3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
 .quit-btn { background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--muted); padding:6px 14px; border-radius:50px; font-size:.8rem; transition:all .2s; white-space:nowrap; }
+.quit-btn:hover { border-color:var(--coral); color:var(--coral); }
 
 /* ===== RESULT SCREEN ===== */
 #resultScreen { gap:16px; }
-.result-rank { font-size:5rem; animation:rankBounce 1s cubic-bezier(.34,1.56,.64,1) .3s both; }
+.result-title { font-family:'Zen Maru Gothic',sans-serif; font-size:clamp(2rem,6vw,3.5rem); font-weight:900; text-align:center; }
+.result-rank {
+  font-size:5rem; animation:rankBounce 1s cubic-bezier(.34,1.56,.64,1) .3s both;
+}
+@keyframes rankBounce { from{transform:scale(0) rotate(-20deg);opacity:0} to{transform:scale(1) rotate(0deg);opacity:1} }
 .result-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; width:100%; max-width:480px; }
 .r-stat { background:var(--card); border-radius:16px; padding:16px; text-align:center; }
-.result-name-row { display:flex; gap:10px; align-items:center; width:100%; max-width:480px; }
-.name-input { flex:1; background:var(--card); border:2px solid var(--card2); border-radius:12px; padding:12px 16px; color:var(--text); outline:none; }
-.save-btn { background:linear-gradient(135deg,var(--sakura),var(--purple)); color:white; border:none; border-radius:12px; padding:12px 24px; font-weight:700; }
+.r-stat-num { font-family:'Orbitron',sans-serif; font-size:1.6rem; font-weight:700; }
+.r-stat-label { font-size:.75rem; color:var(--muted); margin-top:4px; }
+.result-name-row { display:flex; gap:10px; align-items:center; width:100%; max-width:480px; box-sizing:border-box; }
+.name-input {
+  flex:1; min-width:0; background:var(--card); border:2px solid var(--card2); border-radius:12px;
+  padding:12px 16px; color:var(--text); font-family:'Noto Sans TC',sans-serif; font-size:1rem; outline:none;
+  transition:border-color .2s;
+}
+.name-input:focus { border-color:var(--sakura); }
+.name-input::placeholder { color:var(--muted); }
+.save-btn {
+  background:linear-gradient(135deg,var(--sakura),var(--purple));
+  color:white; border:none; border-radius:12px; padding:12px 24px;
+  font-weight:700; font-size:.95rem; transition:all .2s; white-space:nowrap;
+}
+.save-btn:hover { transform:scale(1.05); box-shadow:0 4px 20px var(--glow-pink); }
+.result-btns { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+.retry-btn { background:var(--card); border:2px solid var(--card2); color:var(--text); border-radius:50px; padding:14px 32px; font-weight:700; transition:all .2s; }
+.retry-btn:hover { border-color:var(--sakura); color:var(--sakura); }
+.home-btn2 { background:transparent; border:2px solid var(--muted); color:var(--muted); border-radius:50px; padding:14px 32px; font-weight:700; transition:all .2s; }
+.home-btn2:hover { border-color:var(--matcha); color:var(--matcha); }
 
 /* ===== LEADERBOARD SCREEN ===== */
 #lbScreen { justify-content:flex-start; padding-top:48px; padding-bottom:48px; gap:0; overflow-y:auto; }
-.lb-row { background:var(--card); border-radius:16px; padding:14px 20px; display:flex; align-items:center; gap:14px; margin-bottom:8px; width:100%; max-width:520px; }
+.lb-header { text-align:center; margin-bottom:24px; width:100%; max-width:520px; }
+.lb-crown { font-size:3rem; margin-bottom:8px; animation:rankBounce .8s cubic-bezier(.34,1.56,.64,1) both; }
+.lb-title {
+  font-family:'Zen Maru Gothic',sans-serif; font-size:1.8rem; font-weight:900;
+  background:linear-gradient(135deg,var(--yuzu),var(--sakura));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:4px;
+}
+.lb-subtitle { color:var(--muted); font-size:.85rem; }
+.lb-list { width:100%; max-width:520px; display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+.lb-row {
+  background:var(--card);
+  border-radius:16px; padding:14px 20px;
+  display:flex; align-items:center; gap:14px;
+  border:1px solid rgba(255,255,255,.07);
+  transition:transform .2s, box-shadow .2s;
+  animation:slideIn .3s ease both;
+}
+.lb-row:hover { transform:translateX(4px); box-shadow:0 4px 20px rgba(0,0,0,.3); }
+.lb-row.rank-1 { border-color:rgba(255,217,61,.35); background:linear-gradient(135deg,rgba(255,217,61,.08),var(--card)); }
+.lb-row.rank-2 { border-color:rgba(167,139,250,.25); background:linear-gradient(135deg,rgba(167,139,250,.06),var(--card)); }
+.lb-row.rank-3 { border-color:rgba(255,107,157,.2); background:linear-gradient(135deg,rgba(255,107,157,.06),var(--card)); }
+@keyframes slideIn { from{opacity:0;transform:translateX(-16px)} to{opacity:1;transform:translateX(0)} }
+.lb-rank-badge {
+  font-family:'Orbitron',sans-serif; font-size:.95rem; font-weight:700;
+  width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--card2); color:var(--muted); flex-shrink:0;
+}
+.lb-row.rank-1 .lb-rank-badge { background:rgba(255,217,61,.2); color:var(--yuzu); }
+.lb-row.rank-2 .lb-rank-badge { background:rgba(167,139,250,.2); color:var(--purple); }
+.lb-row.rank-3 .lb-rank-badge { background:rgba(255,107,157,.2); color:var(--sakura); }
+.lb-info { flex:1; min-width:0; }
+.lb-name { font-weight:700; font-size:.95rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.lb-meta { font-size:.72rem; color:var(--muted); margin-top:2px; }
+.lb-right { text-align:right; flex-shrink:0; }
+.lb-score { font-family:'Orbitron',sans-serif; font-size:1.1rem; font-weight:700; color:var(--yuzu); }
+.lb-diff { font-size:.68rem; color:var(--muted); margin-top:2px; }
+.back-btn {
+  background:transparent; border:1.5px solid rgba(255,255,255,.15);
+  color:var(--muted); border-radius:50px; padding:12px 32px;
+  font-weight:700; font-size:.9rem; transition:all .2s;
+}
+.back-btn:hover { border-color:var(--sakura); color:var(--sakura); box-shadow:0 0 16px var(--glow-pink); }
+.lb-empty {
+  color:var(--muted); text-align:center; padding:48px 24px; font-size:.95rem;
+  background:var(--card); border-radius:20px; border:1px dashed rgba(255,255,255,.08);
+  width:100%; max-width:520px;
+}
+.lb-empty-icon { font-size:3rem; margin-bottom:12px; }
+.lb-filter { display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:16px; width:100%; max-width:520px; }
+.lb-kana-tabs { display:flex; gap:8px; }
+.lb-filter-btn {
+  padding:7px 22px; border-radius:50px;
+  background:var(--card); border:1.5px solid rgba(255,255,255,.08);
+  color:var(--muted); font-size:.82rem; font-weight:700; transition:all .2s;
+}
+.lb-filter-btn.active { border-color:var(--sakura); color:var(--sakura); background:rgba(255,107,157,.1); }
+.lb-filter-btn:hover:not(.active) { border-color:rgba(255,255,255,.2); color:var(--text); }
+.lb-stage-select {
+  background:var(--card); border:1.5px solid rgba(255,255,255,.12);
+  color:var(--text); border-radius:12px; padding:9px 16px;
+  font-size:.85rem; font-weight:700; font-family:'Zen Maru Gothic',sans-serif;
+  width:100%; max-width:300px; cursor:pointer; outline:none; transition:all .2s;
+  appearance:none; -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 14px center;
+}
+.lb-stage-select:focus { border-color:var(--purple); box-shadow:0 0 12px rgba(167,139,250,.2); }
+.lb-stage-select option { background:#1a1625; color:var(--text); }
 
 /* SCREEN FLASH */
 .flash { position:fixed;inset:0;pointer-events:none;z-index:200;opacity:0;transition:opacity .15s; }
@@ -216,8 +309,25 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .flash.wrong-flash { background:radial-gradient(ellipse,rgba(255,107,107,.2),transparent 70%); }
 .flash.show { opacity:1; }
 
+/* SCORE POPUP */
+.score-popup { position:fixed; pointer-events:none; z-index:300; font-family:'Orbitron',sans-serif; font-weight:700; animation:popupFly .8s ease forwards; }
+@keyframes popupFly { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-60px) scale(1.4)} }
+
 @media(max-width:480px) {
-  .start-btn { width:100%; max-width:320px; }
+  .screen { padding:20px 16px; }
+  .mode-grid { grid-template-columns:1fr 1fr; max-width:100%; }
+  .options-grid { grid-template-columns:1fr 1fr; }
+  .result-stats { grid-template-columns:repeat(3,1fr); }
+  .game-header { padding:12px 16px; }
+  .hud-value { font-size:1rem; }
+  .result-name-row { flex-direction:column; align-items:stretch; }
+  .save-btn { width:100%; text-align:center; }
+  .result-btns { flex-direction:column; align-items:stretch; width:100%; max-width:480px; }
+  .retry-btn, .home-btn2 { text-align:center; }
+  .start-btn { padding:16px 40px; font-size:1.05rem; width:100%; max-width:320px; }
+  .diff-row { flex-wrap:wrap; justify-content:center; }
+  #resultScreen { padding:20px 16px; }
+  .r-stat-num { font-size:1.2rem; }
 }
 </style>
 </head>
@@ -229,15 +339,18 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 <div id="particles"></div>
 <div class="flash" id="flash"></div>
 
+<!-- HOME -->
 <div class="screen" id="homeScreen">
   <div class="home-logo">五十音<br>大冒險</div>
   <div class="home-sub">GO · GO · にほんご！</div>
 
+  <!-- 平假名／片假名 -->
   <div class="kana-tabs">
     <button class="kana-tab active" data-kana="hiragana">ひ 平假名</button>
     <button class="kana-tab" data-kana="katakana">カ 片假名</button>
   </div>
 
+  <!-- 4個關卡 -->
   <div class="stage-grid">
     <button class="stage-btn selected" data-stage="seion">
       <div class="stage-icon">あ</div>
@@ -271,46 +384,747 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   <button class="leaderboard-link" id="lbBtn">🏆 查看排行榜</button>
 </div>
 
+<!-- GAME -->
 <div class="screen hidden" id="gameScreen">
   <div class="game-header">
-    <div class="hud-item"><div class="hud-label">分數</div><div class="hud-value score-val" id="hudScore">0</div></div>
-    <div class="hud-item"><div class="hud-label">連擊</div><div class="hud-value streak-val" id="hudStreak">×0</div></div>
-    <div class="hud-item"><div class="hud-label">剩餘時間</div><div class="hud-value timer-val" id="hudTimer">60</div></div>
+    <div class="hud-item">
+      <div class="hud-label">分數</div>
+      <div class="hud-value score-val" id="hudScore">0</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">連擊</div>
+      <div class="hud-value streak-val" id="hudStreak">×0</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">剩餘時間</div>
+      <div class="hud-value timer-val" id="hudTimer">60</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">正確率</div>
+      <div class="hud-value" id="hudAcc" style="color:var(--purple)">-</div>
+    </div>
     <button class="quit-btn" id="quitBtn">✕ 結束</button>
   </div>
   <div class="timer-bar-wrap"><div class="timer-bar" id="timerBar"></div></div>
+  <div class="combo-banner" id="comboBanner">🔥 COMBO ×5</div>
+
   <div class="question-area">
     <div class="progress-dots" id="progressDots"></div>
-    <div class="kana-card"><span class="kana-char" id="kanaChar">あ</span><div class="kana-type-hint" id="kanaHint">讀音是？</div></div>
+    <div class="kana-card">
+      <span class="kana-char" id="kanaChar" style="color:var(--text)">あ</span>
+      <div class="kana-type-hint" id="kanaHint">這個平假名的讀音是？</div>
+    </div>
   </div>
+
   <div class="options-grid" id="optionsGrid"></div>
   <div class="feedback-row" id="feedbackRow"></div>
 </div>
 
-<script type="module">
-// 這裡是原本所有的 JavaScript 邏輯，包含 DATA, STATE, 遊戲循環, Firebase 排行榜等
-// 由於代碼極長，請確保將原本 <script type="module"> 內的內容完整保留並貼回此處
-// --------------------------------------------------------------------------
+<!-- RESULT -->
+<div class="screen hidden" id="resultScreen">
+  <div class="result-rank" id="resultRank">🏅</div>
+  <div class="result-title" id="resultTitle">太厲害了！</div>
+  <div class="result-stats">
+    <div class="r-stat">
+      <div class="r-stat-num" id="rScore" style="color:var(--yuzu)">0</div>
+      <div class="r-stat-label">總分</div>
+    </div>
+    <div class="r-stat">
+      <div class="r-stat-num" id="rAcc" style="color:var(--matcha)">0%</div>
+      <div class="r-stat-label">正確率</div>
+    </div>
+    <div class="r-stat">
+      <div class="r-stat-num" id="rStreak" style="color:var(--sakura)">0</div>
+      <div class="r-stat-label">最高連擊</div>
+    </div>
+  </div>
+  <div class="result-name-row">
+    <input class="name-input" id="playerName" placeholder="輸入你的名字存入排行榜 🏆" maxlength="12">
+    <button class="save-btn" id="saveBtn">儲存</button>
+  </div>
+  <div class="result-btns">
+    <button class="retry-btn" id="retryBtn">🔄 再玩一次</button>
+    <button class="home-btn2" id="homeBtn2">🏠 回首頁</button>
+  </div>
+</div>
 
-// 示例：Cursor 邏輯
+<!-- LEADERBOARD -->
+<div class="screen hidden" id="lbScreen">
+  <div class="lb-header">
+    <div class="lb-crown">🏆</div>
+    <div class="lb-title">排行榜</div>
+    <div class="lb-subtitle">看看誰是五十音最強冒險家！</div>
+  </div>
+  <div class="lb-filter" id="lbFilter"></div>
+  <div class="lb-list" id="lbList"></div>
+  <button class="back-btn" id="backBtn">← 回首頁</button>
+</div>
+
+<script type="module">
+// ===== CURSOR =====
 const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0;
 document.addEventListener('mousemove',e=>{
-  cur.style.transform=`translate(${e.clientX-8}px,${e.clientY-8}px)`;
-  cur2.style.transform=`translate(${e.clientX-18}px,${e.clientY-18}px)`;
+  mx=e.clientX;my=e.clientY;
+  cur.style.transform=`translate(${mx-8}px,${my-8}px)`;
+  cur2.style.transform=`translate(${mx-18}px,${my-18}px)`;
+});
+document.querySelectorAll('button,a,.mode-btn').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform+=' scale(2)';});
+  el.addEventListener('mouseleave',()=>{});
 });
 
-// 星空背景
-const starsEl=document.getElementById('starsBg');
-for(let i=0;i<120;i++){
-  const s=document.createElement('div');
-  s.className='star';
-  const sz=Math.random()*2.5+.5;
-  s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s`;
-  starsEl.appendChild(s);
+// ===== STARS =====
+document.addEventListener('DOMContentLoaded', () => {
+  const starsEl=document.getElementById('starsBg');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const sz=Math.random()*2.5+.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s`;
+    starsEl.appendChild(s);
+  }
+});
+
+// ===== DATA =====
+const DATA = {
+  hiragana: [
+    // 清音
+    {char:'あ',answer:'a',type:'平假名'},{char:'い',answer:'i',type:'平假名'},{char:'う',answer:'u',type:'平假名'},{char:'え',answer:'e',type:'平假名'},{char:'お',answer:'o',type:'平假名'},
+    {char:'か',answer:'ka',type:'平假名'},{char:'き',answer:'ki',type:'平假名'},{char:'く',answer:'ku',type:'平假名'},{char:'け',answer:'ke',type:'平假名'},{char:'こ',answer:'ko',type:'平假名'},
+    {char:'さ',answer:'sa',type:'平假名'},{char:'し',answer:'shi',type:'平假名'},{char:'す',answer:'su',type:'平假名'},{char:'せ',answer:'se',type:'平假名'},{char:'そ',answer:'so',type:'平假名'},
+    {char:'た',answer:'ta',type:'平假名'},{char:'ち',answer:'chi',type:'平假名'},{char:'つ',answer:'tsu',type:'平假名'},{char:'て',answer:'te',type:'平假名'},{char:'と',answer:'to',type:'平假名'},
+    {char:'な',answer:'na',type:'平假名'},{char:'に',answer:'ni',type:'平假名'},{char:'ぬ',answer:'nu',type:'平假名'},{char:'ね',answer:'ne',type:'平假名'},{char:'の',answer:'no',type:'平假名'},
+    {char:'は',answer:'ha',type:'平假名'},{char:'ひ',answer:'hi',type:'平假名'},{char:'ふ',answer:'fu',type:'平假名'},{char:'へ',answer:'he',type:'平假名'},{char:'ほ',answer:'ho',type:'平假名'},
+    {char:'ま',answer:'ma',type:'平假名'},{char:'み',answer:'mi',type:'平假名'},{char:'む',answer:'mu',type:'平假名'},{char:'め',answer:'me',type:'平假名'},{char:'も',answer:'mo',type:'平假名'},
+    {char:'や',answer:'ya',type:'平假名'},{char:'ゆ',answer:'yu',type:'平假名'},{char:'よ',answer:'yo',type:'平假名'},
+    {char:'ら',answer:'ra',type:'平假名'},{char:'り',answer:'ri',type:'平假名'},{char:'る',answer:'ru',type:'平假名'},{char:'れ',answer:'re',type:'平假名'},{char:'ろ',answer:'ro',type:'平假名'},
+    {char:'わ',answer:'wa',type:'平假名'},{char:'を',answer:'wo',type:'平假名'},{char:'ん',answer:'n',type:'平假名'},
+    // 濁音
+    {char:'が',answer:'ga',type:'濁音'},{char:'ぎ',answer:'gi',type:'濁音'},{char:'ぐ',answer:'gu',type:'濁音'},{char:'げ',answer:'ge',type:'濁音'},{char:'ご',answer:'go',type:'濁音'},
+    {char:'ざ',answer:'za',type:'濁音'},{char:'じ',answer:'ji',type:'濁音'},{char:'ず',answer:'zu',type:'濁音'},{char:'ぜ',answer:'ze',type:'濁音'},{char:'ぞ',answer:'zo',type:'濁音'},
+    {char:'だ',answer:'da',type:'濁音'},{char:'で',answer:'de',type:'濁音'},{char:'ど',answer:'do',type:'濁音'},
+    {char:'ば',answer:'ba',type:'濁音'},{char:'び',answer:'bi',type:'濁音'},{char:'ぶ',answer:'bu',type:'濁音'},{char:'べ',answer:'be',type:'濁音'},{char:'ぼ',answer:'bo',type:'濁音'},
+    // 半濁音
+    {char:'ぱ',answer:'pa',type:'半濁音'},{char:'ぴ',answer:'pi',type:'半濁音'},{char:'ぷ',answer:'pu',type:'半濁音'},{char:'ぺ',answer:'pe',type:'半濁音'},{char:'ぽ',answer:'po',type:'半濁音'},
+    // 拗音
+    {char:'きゃ',answer:'kya',type:'拗音'},{char:'きゅ',answer:'kyu',type:'拗音'},{char:'きょ',answer:'kyo',type:'拗音'},
+    {char:'しゃ',answer:'sha',type:'拗音'},{char:'しゅ',answer:'shu',type:'拗音'},{char:'しょ',answer:'sho',type:'拗音'},
+    {char:'ちゃ',answer:'cha',type:'拗音'},{char:'ちゅ',answer:'chu',type:'拗音'},{char:'ちょ',answer:'cho',type:'拗音'},
+    {char:'にゃ',answer:'nya',type:'拗音'},{char:'にゅ',answer:'nyu',type:'拗音'},{char:'にょ',answer:'nyo',type:'拗音'},
+    {char:'ひゃ',answer:'hya',type:'拗音'},{char:'ひゅ',answer:'hyu',type:'拗音'},{char:'ひょ',answer:'hyo',type:'拗音'},
+    {char:'みゃ',answer:'mya',type:'拗音'},{char:'みゅ',answer:'myu',type:'拗音'},{char:'みょ',answer:'myo',type:'拗音'},
+    {char:'りゃ',answer:'rya',type:'拗音'},{char:'りゅ',answer:'ryu',type:'拗音'},{char:'りょ',answer:'ryo',type:'拗音'},
+    {char:'ぎゃ',answer:'gya',type:'濁拗音'},{char:'じゃ',answer:'ja',type:'濁拗音'},{char:'びゃ',answer:'bya',type:'濁拗音'},
+    {char:'ぴゃ',answer:'pya',type:'半濁拗音'},{char:'ぴゅ',answer:'pyu',type:'半濁拗音'},{char:'ぴょ',answer:'pyo',type:'半濁拗音'},
+  ],
+  katakana: [
+    {char:'ア',answer:'a',type:'片假名'},{char:'イ',answer:'i',type:'片假名'},{char:'ウ',answer:'u',type:'片假名'},{char:'エ',answer:'e',type:'片假名'},{char:'オ',answer:'o',type:'片假名'},
+    {char:'カ',answer:'ka',type:'片假名'},{char:'キ',answer:'ki',type:'片假名'},{char:'ク',answer:'ku',type:'片假名'},{char:'ケ',answer:'ke',type:'片假名'},{char:'コ',answer:'ko',type:'片假名'},
+    {char:'サ',answer:'sa',type:'片假名'},{char:'シ',answer:'shi',type:'片假名'},{char:'ス',answer:'su',type:'片假名'},{char:'セ',answer:'se',type:'片假名'},{char:'ソ',answer:'so',type:'片假名'},
+    {char:'タ',answer:'ta',type:'片假名'},{char:'チ',answer:'chi',type:'片假名'},{char:'ツ',answer:'tsu',type:'片假名'},{char:'テ',answer:'te',type:'片假名'},{char:'ト',answer:'to',type:'片假名'},
+    {char:'ナ',answer:'na',type:'片假名'},{char:'ニ',answer:'ni',type:'片假名'},{char:'ヌ',answer:'nu',type:'片假名'},{char:'ネ',answer:'ne',type:'片假名'},{char:'ノ',answer:'no',type:'片假名'},
+    {char:'ハ',answer:'ha',type:'片假名'},{char:'ヒ',answer:'hi',type:'片假名'},{char:'フ',answer:'fu',type:'片假名'},{char:'ヘ',answer:'he',type:'片假名'},{char:'ホ',answer:'ho',type:'片假名'},
+    {char:'マ',answer:'ma',type:'片假名'},{char:'ミ',answer:'mi',type:'片假名'},{char:'ム',answer:'mu',type:'片假名'},{char:'メ',answer:'me',type:'片假名'},{char:'モ',answer:'mo',type:'片假名'},
+    {char:'ヤ',answer:'ya',type:'片假名'},{char:'ユ',answer:'yu',type:'片假名'},{char:'ヨ',answer:'yo',type:'片假名'},
+    {char:'ラ',answer:'ra',type:'片假名'},{char:'リ',answer:'ri',type:'片假名'},{char:'ル',answer:'ru',type:'片假名'},{char:'レ',answer:'re',type:'片假名'},{char:'ロ',answer:'ro',type:'片假名'},
+    {char:'ワ',answer:'wa',type:'片假名'},{char:'ヲ',answer:'wo',type:'片假名'},{char:'ン',answer:'n',type:'片假名'},
+    {char:'ガ',answer:'ga',type:'濁音'},{char:'ギ',answer:'gi',type:'濁音'},{char:'グ',answer:'gu',type:'濁音'},{char:'ゲ',answer:'ge',type:'濁音'},{char:'ゴ',answer:'go',type:'濁音'},
+    {char:'ザ',answer:'za',type:'濁音'},{char:'ジ',answer:'ji',type:'濁音'},{char:'ズ',answer:'zu',type:'濁音'},{char:'ゼ',answer:'ze',type:'濁音'},{char:'ゾ',answer:'zo',type:'濁音'},
+    {char:'バ',answer:'ba',type:'濁音'},{char:'ビ',answer:'bi',type:'濁音'},{char:'ブ',answer:'bu',type:'濁音'},{char:'ベ',answer:'be',type:'濁音'},{char:'ボ',answer:'bo',type:'濁音'},
+    {char:'パ',answer:'pa',type:'半濁音'},{char:'ピ',answer:'pi',type:'半濁音'},{char:'プ',answer:'pu',type:'半濁音'},{char:'ペ',answer:'pe',type:'半濁音'},{char:'ポ',answer:'po',type:'半濁音'},
+    {char:'キャ',answer:'kya',type:'拗音'},{char:'シャ',answer:'sha',type:'拗音'},{char:'チャ',answer:'cha',type:'拗音'},{char:'ニャ',answer:'nya',type:'拗音'},
+    {char:'ヒャ',answer:'hya',type:'拗音'},{char:'ミャ',answer:'mya',type:'拗音'},{char:'リャ',answer:'rya',type:'拗音'},
+    {char:'ジャ',answer:'ja',type:'濁拗音'},{char:'ビャ',answer:'bya',type:'濁拗音'},{char:'ピャ',answer:'pya',type:'半濁拗音'},
+  ],
+  vocab: [
+    {char:'犬',answer:'狗',type:'動物'},{char:'猫',answer:'貓',type:'動物'},{char:'魚',answer:'魚',type:'動物'},{char:'鳥',answer:'鳥',type:'動物'},{char:'熊',answer:'熊',type:'動物'},
+    {char:'水',answer:'水',type:'自然'},{char:'火',answer:'火',type:'自然'},{char:'山',answer:'山',type:'自然'},{char:'川',answer:'河川',type:'自然'},{char:'空',answer:'天空',type:'自然'},
+    {char:'食べる',answer:'吃',type:'動詞'},{char:'飲む',answer:'喝',type:'動詞'},{char:'見る',answer:'看',type:'動詞'},{char:'聞く',answer:'聽',type:'動詞'},{char:'行く',answer:'去',type:'動詞'},
+    {char:'大きい',answer:'大的',type:'形容詞'},{char:'小さい',answer:'小的',type:'形容詞'},{char:'かわいい',answer:'可愛的',type:'形容詞'},{char:'おいしい',answer:'好吃的',type:'形容詞'},{char:'楽しい',answer:'快樂的',type:'形容詞'},
+    {char:'ありがとう',answer:'謝謝',type:'日常'},{char:'すみません',answer:'不好意思',type:'日常'},{char:'おはよう',answer:'早安',type:'日常'},{char:'こんにちは',answer:'你好',type:'日常'},{char:'さようなら',answer:'再見',type:'日常'},
+    {char:'電車',answer:'電車',type:'交通'},{char:'バス',answer:'公車',type:'交通'},{char:'学校',answer:'學校',type:'地點'},{char:'病院',answer:'醫院',type:'地點'},{char:'コンビニ',answer:'便利商店',type:'地點'},
+  ]
+};
+
+// ===== STATE =====
+let selectedKana = 'hiragana';
+let selectedStage = 'seion';
+let selectedModes = ['hiragana']; // legacy compat
+let difficulty = 'normal';
+let timerMax = 60;
+let questions = [], qIndex = 0;
+let score = 0, streak = 0, maxStreak = 0, correct = 0, total = 0;
+let timerVal = 60, timerInterval = null;
+let answered = false;
+let scoreHistory = [];
+
+const DIFF = { normal:{time:60,pts:10,bonus:5}, hard:{time:45,pts:15,bonus:8}, blitz:{time:25,pts:20,bonus:12} };
+const TYPE_COLORS = {'平假名':'#ff6b9d','片假名':'#00e5c8','濁音':'#a78bfa','半濁音':'#ffd93d','拗音':'#ff9f43','濁拗音':'#ee5a24','半濁拗音':'#fd9644','動物':'#26de81','自然':'#45aaf2','動詞':'#fd9644','形容詞':'#a55eea','日常':'#ff6b9d','交通':'#00e5c8','地點':'#ffd93d'};
+
+// ===== AUDIO =====
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function getAudio(){if(!audioCtx){try{audioCtx=new AudioCtx();}catch(e){}}return audioCtx;}
+function playTone(freq,dur,type='sine',vol=0.15){
+  const a=getAudio();if(!a)return;
+  const osc=a.createOscillator(),gain=a.createGain();
+  osc.connect(gain);gain.connect(a.destination);
+  osc.type=type;osc.frequency.value=freq;
+  gain.gain.setValueAtTime(vol,a.currentTime);
+  gain.gain.exponentialRampToValueAtTime(.001,a.currentTime+dur);
+  osc.start(a.currentTime);osc.stop(a.currentTime+dur);
+}
+function sfxCorrect(){playTone(523,.1);setTimeout(()=>playTone(659,.1),80);setTimeout(()=>playTone(784,.2),160);}
+function sfxWrong(){playTone(200,.3,'sawtooth',.1);}
+function sfxCombo(){playTone(880,.05);setTimeout(()=>playTone(988,.05),60);setTimeout(()=>playTone(1047,.15),120);}
+function sfxTick(){playTone(440,.05,'square',.05);}
+
+// ===== PARTICLES =====
+const pEl=document.getElementById('particles');
+function spawnParticles(x,y,isCorrect){
+  const emojis=isCorrect?['✨','🌸','⭐','💫','🎉']:['💥','😅','❌'];
+  for(let i=0;i<6;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const angle=Math.random()*360, dist=60+Math.random()*60;
+    const tx=Math.cos(angle*Math.PI/180)*dist, ty=Math.sin(angle*Math.PI/180)*dist-40;
+    p.style.cssText=`left:${x}px;top:${y}px;--tx:${tx}px;--ty:${ty}px;--dur:${.6+Math.random()*.4}s;--fs:${1+Math.random()}rem`;
+    p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    pEl.appendChild(p);
+    setTimeout(()=>p.remove(),1000);
+  }
 }
 
-// 其餘遊戲逻辑 (startGame, buildQuestions, checkAnswer, Firebase 串接等)
-// ... 請直接沿用原檔案中的 Script 部分 ...
+function scorePopup(x,y,pts,isCorrect){
+  const el=document.createElement('div');
+  el.className='score-popup';
+  el.style.cssText=`left:${x}px;top:${y-20}px;color:${isCorrect?'var(--matcha)':'var(--coral)'};font-size:1.3rem;`;
+  el.textContent=isCorrect?`+${pts}`:`±0`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),800);
+}
+
+// ===== KANA / STAGE / DIFF TOGGLES =====
+// 各關卡在平假名／片假名下的代表字
+const STAGE_ICONS = {
+  hiragana: { seion:'あ', dakuten:'が', youon:'きゃ' },
+  katakana: { seion:'ア', dakuten:'ガ', youon:'キャ' }
+};
+const STAGE_DESCS = {
+  seion:   { hiragana:'46個基本假名', katakana:'46個基本假名' },
+  dakuten: { hiragana:'が行～ど行',   katakana:'ガ行～ド行'   },
+  youon:   { hiragana:'きゃ・しゃ・ちゃ...', katakana:'キャ・シャ・チャ...' }
+};
+
+function updateStageIcons(){
+  document.querySelectorAll('.stage-btn[data-stage]').forEach(btn => {
+    const stage = btn.dataset.stage;
+    const iconEl = btn.querySelector('.stage-icon');
+    const descEl = btn.querySelector('.stage-desc');
+    if(iconEl && STAGE_ICONS[selectedKana] && STAGE_ICONS[selectedKana][stage]){
+      iconEl.textContent = STAGE_ICONS[selectedKana][stage];
+    }
+    if(descEl && STAGE_DESCS[stage] && STAGE_DESCS[stage][selectedKana]){
+      descEl.textContent = STAGE_DESCS[stage][selectedKana];
+    }
+  });
+}
+
+function toggleKana(btn){
+  selectedKana = btn.dataset.kana;
+  selectedModes = [selectedKana];
+  document.querySelectorAll('.kana-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  updateStageIcons();
+}
+function toggleStage(btn){
+  selectedStage = btn.dataset.stage;
+  document.querySelectorAll('.stage-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function setDiff(btn){
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  difficulty=btn.dataset.diff;
+}
+
+// ===== BUILD QUESTIONS =====
+function buildQuestions(){
+  let pool = DATA[selectedKana] || [];
+  if(selectedStage === 'seion'){
+    pool = pool.filter(q => q.type === '平假名' || q.type === '片假名');
+  } else if(selectedStage === 'dakuten'){
+    pool = pool.filter(q => q.type === '濁音' || q.type === '半濁音');
+  } else if(selectedStage === 'youon'){
+    pool = pool.filter(q => q.type === '拗音' || q.type === '濁拗音' || q.type === '半濁拗音');
+  }
+  // 'all' → 全部不篩選
+  pool = pool.filter((v,i,a)=>a.findIndex(x=>x.char===v.char)===i);
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  return pool.slice(0,40);
+}
+
+function getWrongOptions(correct, pool, n=3){
+  // 只從同模式、同類型優先抽錯誤選項，避免混入其他模式
+  const sameType=pool.filter(q=>q.answer!==correct);
+  const allAnswers=[...new Set(sameType.map(q=>q.answer))];
+  const shuffled=allAnswers.sort(()=>Math.random()-.5);
+  return shuffled.slice(0,n);
+}
+
+// ===== START GAME =====
+function startGame(){
+  questions=buildQuestions();
+  if(questions.length===0)return;
+  qIndex=0; score=0; streak=0; maxStreak=0; correct=0; total=0;
+  answered=false;
+  const cfg=DIFF[difficulty];
+  timerVal=cfg.time; timerMax=cfg.time;
+  showScreen('gameScreen');
+  buildProgressDots();
+  showQuestion();
+  startTimer();
+}
+
+function retryGame(){ startGame(); }
+
+function buildProgressDots(){
+  const el=document.getElementById('progressDots');
+  el.innerHTML='';
+  const count=Math.min(questions.length,20);
+  for(let i=0;i<count;i++){
+    const d=document.createElement('div');
+    d.className='prog-dot'+(i===0?' current':'');
+    d.id=`dot${i}`;
+    el.appendChild(d);
+  }
+}
+
+function showQuestion(){
+  if(qIndex>=questions.length){ endGame(); return; }
+  answered=false;
+  const q=questions[qIndex];
+  // char
+  const charEl=document.getElementById('kanaChar');
+  charEl.textContent=q.char;
+  charEl.style.color=TYPE_COLORS[q.type]||'var(--text)';
+  charEl.style.animation='none';charEl.offsetHeight;charEl.style.animation='charPop .35s cubic-bezier(.34,1.56,.64,1) both';
+  // hint
+  const hints={平假名:'這個平假名的讀音是？',片假名:'這個片假名的讀音是？',濁音:'這個濁音的讀音是？',半濁音:'這個半濁音的讀音是？',拗音:'這個拗音的讀音是？',濁拗音:'這個濁拗音的讀音是？',半濁拗音:'這個半濁拗音的讀音是？',動物:'這個漢字的中文意思是？',自然:'這個漢字的中文意思是？',動詞:'這個動詞的中文意思是？',形容詞:'這個形容詞的中文意思是？',日常:'這個日語的中文意思是？',交通:'這個單字的中文意思是？',地點:'這個地點的日語是？'};
+  document.getElementById('kanaHint').textContent=hints[q.type]||'';
+  // options
+  const wrongs=getWrongOptions(q.answer,questions);
+  const opts=[q.answer,...wrongs].sort(()=>Math.random()-.5);
+  const grid=document.getElementById('optionsGrid');
+  grid.innerHTML='';
+  opts.forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';
+    btn.textContent=opt;
+    btn.onclick=(e)=>checkAnswer(opt,q.answer,btn,e);
+    grid.appendChild(btn);
+  });
+  document.getElementById('feedbackRow').textContent='';
+  document.getElementById('feedbackRow').style.color='var(--text)';
+  // progress
+  updateDot();
+}
+
+function updateDot(){
+  document.querySelectorAll('.prog-dot').forEach((d,i)=>{
+    d.classList.remove('current');
+    if(i<qIndex) { /* keep done class */ }
+    else if(i===qIndex) d.classList.add('current');
+  });
+}
+
+function checkAnswer(selected, correctAns, btn, e){
+  if(answered) return;
+  answered=true;
+  total++;
+  const isCorrect=(selected===correctAns);
+  const cfg=DIFF[difficulty];
+  const allBtns=document.querySelectorAll('.opt-btn');
+  allBtns.forEach(b=>b.disabled=true);
+
+  if(isCorrect){
+    correct++;
+    streak++;
+    if(streak>maxStreak)maxStreak=streak;
+    const pts=cfg.pts + (streak>=3?cfg.bonus:0) + (streak>=5?cfg.bonus:0);
+    score+=pts;
+    btn.classList.add('correct-anim');
+    document.getElementById('feedbackRow').textContent = streak>=5?`🔥 ${streak}連擊！超強！+${pts}分`:streak>=3?`✅ 連擊 ×${streak}！+${pts}分`:`✅ 正確！よくできました！+${pts}分`;
+    document.getElementById('feedbackRow').style.color='var(--matcha)';
+    sfxCorrect();
+    if(streak>=3)sfxCombo();
+    flashScreen('correct-flash');
+    if(e){spawnParticles(e.clientX,e.clientY,true);scorePopup(e.clientX,e.clientY,pts,true);}
+    if(streak>=3){ const cb=document.getElementById('comboBanner'); cb.textContent=`🔥 COMBO ×${streak}`; cb.classList.add('show'); setTimeout(()=>cb.classList.remove('show'),1500); }
+    const dot=document.getElementById(`dot${Math.min(qIndex,19)}`);
+    if(dot){dot.classList.remove('current');dot.classList.add('done-correct');}
+  } else {
+    streak=0;
+    btn.classList.add('wrong-anim');
+    allBtns.forEach(b=>{ if(b.textContent===correctAns)b.classList.add('correct-anim'); });
+    document.getElementById('feedbackRow').textContent=`❌ 答案是「${correctAns}」，下次加油！`;
+    document.getElementById('feedbackRow').style.color='var(--coral)';
+    sfxWrong();
+    flashScreen('wrong-flash');
+    if(e){spawnParticles(e.clientX,e.clientY,false);scorePopup(e.clientX,e.clientY,0,false);}
+    const dot=document.getElementById(`dot${Math.min(qIndex,19)}`);
+    if(dot){dot.classList.remove('current');dot.classList.add('done-wrong');}
+  }
+
+  updateHUD();
+  qIndex++;
+  setTimeout(()=>{ if(timerVal>0)showQuestion(); },900);
+}
+
+function updateHUD(){
+  document.getElementById('hudScore').textContent=score;
+  document.getElementById('hudStreak').textContent=`×${streak}`;
+  document.getElementById('hudAcc').textContent=total>0?Math.round(correct/total*100)+'%':'-';
+  const timerEl=document.getElementById('hudTimer');
+  timerEl.textContent=timerVal;
+  timerEl.className='hud-value timer-val'+(timerVal<=10?' timer-warn':'');
+  const pct=(timerVal/timerMax)*100;
+  document.getElementById('timerBar').style.width=pct+'%';
+  document.getElementById('timerBar').style.background=pct<25?'linear-gradient(90deg,var(--coral),#ff9f43)':pct<50?'linear-gradient(90deg,var(--yuzu),var(--sakura))':'linear-gradient(90deg,var(--matcha),var(--sakura))';
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    timerVal--;
+    updateHUD();
+    if(timerVal<=5&&timerVal>0)sfxTick();
+    if(timerVal<=0){ clearInterval(timerInterval); endGame(); }
+  },1000);
+}
+
+function flashScreen(cls){
+  const f=document.getElementById('flash');
+  f.className='flash '+cls+' show';
+  setTimeout(()=>f.classList.remove('show'),300);
+}
+
+function quitGame(){ clearInterval(timerInterval); endGame(); }
+
+// ===== END GAME =====
+function endGame(){
+  clearInterval(timerInterval);
+  showScreen('resultScreen');
+  const acc=total>0?Math.round(correct/total*100):0;
+  document.getElementById('rScore').textContent=score;
+  document.getElementById('rAcc').textContent=acc+'%';
+  document.getElementById('rStreak').textContent=maxStreak;
+  let rank='🥉',title='繼續加油！';
+  if(acc>=90&&score>=500){rank='🏆';title='神級選手！完美！';}
+  else if(acc>=80&&score>=300){rank='🥇';title='超厲害！優秀！';}
+  else if(acc>=65&&score>=150){rank='🥈';title='不錯喔！繼續努力！';}
+  document.getElementById('resultRank').textContent=rank;
+  document.getElementById('resultTitle').textContent=title;
+  // 重置儲存按鈕
+  const saveBtn = document.querySelector('.save-btn');
+  saveBtn.textContent = '儲存';
+  saveBtn.disabled = false;
+  // 自動帶入上次名字
+  prefillName();
+  // 有記住名字就自動儲存
+  if(savedPlayerName){
+    saveScore();
+  }
+  animCount('rScore',0,score,1200);
+}
+
+function animCount(id,from,to,dur){
+  const el=document.getElementById(id);
+  const start=performance.now();
+  function step(now){
+    const t=Math.min((now-start)/dur,1);
+    el.textContent=Math.round(from+(to-from)*t);
+    if(t<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ===== FIREBASE SETUP =====
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDocs, query, orderBy, limit, where, startAfter } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC5Xp7xvfCGiGzAvs9bxjrx3bJBphp0_Yg",
+  authDomain: "kana-game-kawauso.firebaseapp.com",
+  projectId: "kana-game-kawauso",
+  storageBucket: "kana-game-kawauso.firebasestorage.app",
+  messagingSenderId: "90199049193",
+  appId: "1:90199049193:web:1432f3d6f80e60c74b8178",
+  measurementId: "G-4L3Q63XQ1W"
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+getAnalytics(fbApp);
+
+// ===== LEADERBOARD =====
+// 記住玩家名字，結算時自動帶入
+let savedPlayerName = '';
+
+async function saveScore(){
+  const nameInput = document.getElementById('playerName');
+  const name = nameInput.value.trim() || savedPlayerName || '匿名冒險家';
+  const saveBtn = document.querySelector('.save-btn');
+  saveBtn.textContent = '儲存中...';
+  saveBtn.disabled = true;
+
+  const mode = `${selectedKana}_${selectedStage}`;
+  const docId = `${name}_${mode}`.replace(/[^a-zA-Z0-9_\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/g, '_');
+
+  try {
+    const entryRef = doc(db, 'leaderboard', docId);
+    const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const existing = await getDoc(entryRef);
+
+    if(existing.exists()){
+      const isMyRecord = savedPlayerName === name;
+      if(!isMyRecord){
+        // 同名但不是本人 → 拒絕
+        saveBtn.textContent = '儲存';
+        saveBtn.disabled = false;
+        nameInput.value = '';
+        nameInput.placeholder = '此名稱已被使用，請換一個！';
+        nameInput.focus();
+        return;
+      }
+      if(existing.data().score >= score){
+        saveBtn.textContent = `✅ 已是最高分！(${existing.data().score}分)`;
+        return;
+      }
+    }
+
+    await setDoc(entryRef, {
+      name, score,
+      acc: total > 0 ? Math.round(correct / total * 100) : 0,
+      streak: maxStreak, mode,
+      diff: difficulty,
+      date: new Date().toLocaleDateString('zh-TW'),
+      timestamp: Date.now()
+    });
+    savedPlayerName = name;
+    localStorage.setItem('kanaPlayerName', name);
+    saveBtn.textContent = '✅ 排行榜更新！';
+  } catch(e) {
+    console.error(e);
+    saveBtn.textContent = '❌ 儲存失敗';
+    saveBtn.disabled = false;
+  }
+}
+
+// 結算畫面顯示時自動帶入上次名字
+function prefillName(){
+  const input = document.getElementById('playerName');
+  const name = savedPlayerName || localStorage.getItem('kanaPlayerName') || '';
+  if(name){
+    savedPlayerName = name;
+    input.value = name;
+    input.placeholder = name;
+  }
+}
+
+// 無限滾動狀態
+let lbCurrentFilter = 'hiragana';
+let lbLastDoc = null;
+let lbLoading = false;
+let lbHasMore = true;
+let lbRankOffset = 0;
+const LB_PAGE = 15;
+
+async function showLeaderboard(){
+  showScreen('lbScreen');
+  await renderLB(selectedKana, selectedStage);
+}
+
+async function renderLB(kana='hiragana', stage='seion'){
+  lbCurrentFilter = `${kana}_${stage}`;
+  lbLastDoc = null;
+  lbHasMore = true;
+  lbRankOffset = 0;
+
+  const list = document.getElementById('lbList');
+  const filterEl = document.getElementById('lbFilter');
+  list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">⏳</div>載入中...</div>`;
+
+  // 建立 UI
+  filterEl.innerHTML = '';
+
+  // 平假名／片假名 tab
+  const kanaRow = document.createElement('div');
+  kanaRow.className = 'lb-kana-tabs';
+  [{ key:'hiragana', label:'ひ 平假名' }, { key:'katakana', label:'カ 片假名' }].forEach(k => {
+    const btn = document.createElement('button');
+    btn.className = 'lb-filter-btn' + (kana===k.key ? ' active' : '');
+    btn.textContent = k.label;
+    btn.addEventListener('click', () => {
+      const sel = document.getElementById('lbStageSelect');
+      renderLB(k.key, sel ? sel.value : stage);
+    });
+    kanaRow.appendChild(btn);
+  });
+  filterEl.appendChild(kanaRow);
+
+  // 關卡下拉
+  const stages = [
+    { key:'seion',   label:'清音（基本46音）' },
+    { key:'dakuten', label:'濁音（が行～ど行）' },
+    { key:'youon',   label:'拗音（きゃ・しゃ...）' },
+    { key:'all',     label:'全部混合' }
+  ];
+  const sel = document.createElement('select');
+  sel.id = 'lbStageSelect';
+  sel.className = 'lb-stage-select';
+  stages.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.key;
+    opt.textContent = s.label;
+    if(s.key === stage) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener('change', () => renderLB(kana, sel.value));
+  filterEl.appendChild(sel);
+
+  list.innerHTML = '';
+  await loadMoreLB();
+
+  const screen = document.getElementById('lbScreen');
+  screen.onscroll = () => {
+    if(screen.scrollTop + screen.clientHeight >= screen.scrollHeight - 100){
+      loadMoreLB();
+    }
+  };
+}
+
+async function loadMoreLB(){
+  if(lbLoading || !lbHasMore) return;
+  lbLoading = true;
+
+  const list = document.getElementById('lbList');
+
+  // 顯示載入指示
+  let loader = document.getElementById('lbLoader');
+  if(!loader){
+    loader = document.createElement('div');
+    loader.id = 'lbLoader';
+    loader.className = 'lb-empty';
+    loader.style.cssText = 'padding:16px;font-size:.85rem;';
+    loader.innerHTML = '⏳ 載入中...';
+    list.appendChild(loader);
+  }
+
+  try {
+    let q;
+    if(lbLastDoc){
+      q = query(collection(db,'leaderboard'), where('mode','==',lbCurrentFilter), orderBy('score','desc'), startAfter(lbLastDoc), limit(LB_PAGE));
+    } else {
+      q = query(collection(db,'leaderboard'), where('mode','==',lbCurrentFilter), orderBy('score','desc'), limit(LB_PAGE));
+    }
+
+    const snapshot = await getDocs(q);
+    loader.remove();
+
+    if(snapshot.empty && lbRankOffset === 0){
+      list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">🎮</div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
+      lbHasMore = false;
+      lbLoading = false;
+      return;
+    }
+
+    if(snapshot.size < LB_PAGE) lbHasMore = false;
+    lbLastDoc = snapshot.docs[snapshot.docs.length - 1];
+
+    const rankClasses = ['rank-1','rank-2','rank-3'];
+    snapshot.docs.forEach((d, i) => {
+      const entry = d.data();
+      const globalIndex = lbRankOffset + i;
+      const row = document.createElement('div');
+      row.className = 'lb-row' + (globalIndex < 3 ? ' ' + rankClasses[globalIndex] : '');
+      row.style.animationDelay = `${i * .04}s`;
+      const diffLabel = {normal:'普通', hard:'困難', blitz:'閃電'}[entry.diff] || entry.diff;
+      row.innerHTML = `
+        <div class="lb-rank-badge">${globalIndex + 1}</div>
+        <div class="lb-info">
+          <div class="lb-name">${entry.name}</div>
+          <div class="lb-meta">正確率 ${entry.acc}% · 最高連擊 ×${entry.streak} · ${entry.date}</div>
+        </div>
+        <div class="lb-right">
+          <div class="lb-score">${entry.score}</div>
+          <div class="lb-diff">${diffLabel}</div>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+
+    lbRankOffset += snapshot.size;
+
+    // 沒有更多了
+    if(!lbHasMore && lbRankOffset > 0){
+      const end = document.createElement('div');
+      end.className = 'lb-empty';
+      end.style.cssText = 'padding:16px;font-size:.8rem;';
+      end.textContent = `── 共 ${lbRankOffset} 位冒險家 ──`;
+      list.appendChild(end);
+    }
+
+  } catch(e) {
+    console.error(e);
+    if(loader) loader.remove();
+    if(lbRankOffset === 0){
+      list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">❌</div>載入失敗，請稍後再試</div>`;
+    }
+  }
+  lbLoading = false;
+}
+
+// ===== SCREEN MANAGEMENT =====
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); }
+
+// ===== INIT & EVENT BINDINGS =====
+showScreen('homeScreen');
+
+// Kana tabs
+document.querySelectorAll('.kana-tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>toggleKana(btn));
+});
+
+// Stage buttons
+document.querySelectorAll('.stage-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>toggleStage(btn));
+});
+
+// Difficulty buttons
+document.querySelectorAll('.diff-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>setDiff(btn));
+});
+
+// Home screen
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('lbBtn').addEventListener('click', showLeaderboard);
+
+// Game screen
+document.getElementById('quitBtn').addEventListener('click', quitGame);
+
+// Result screen
+document.getElementById('saveBtn').addEventListener('click', saveScore);
+document.getElementById('retryBtn').addEventListener('click', retryGame);
+document.getElementById('homeBtn2').addEventListener('click', goHome);
+
+// Leaderboard screen
+document.getElementById('backBtn').addEventListener('click', goHome);
 </script>
 </body>
 </html>
