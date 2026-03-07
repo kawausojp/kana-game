@@ -180,7 +180,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .feedback-row { min-height:32px; text-align:center; font-weight:700; font-size:1rem; margin-top:4px; animation:fadeIn .3s ease; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
 
-.quit-btn { position:fixed; top:16px; right:20px; background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--muted); padding:6px 16px; border-radius:50px; font-size:.8rem; transition:all .2s; z-index:60; }
+.quit-btn { background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--muted); padding:6px 14px; border-radius:50px; font-size:.8rem; transition:all .2s; white-space:nowrap; }
 .quit-btn:hover { border-color:var(--coral); color:var(--coral); }
 
 /* ===== RESULT SCREEN ===== */
@@ -357,10 +357,10 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
       <div class="hud-label">正確率</div>
       <div class="hud-value" id="hudAcc" style="color:var(--purple)">-</div>
     </div>
+    <button class="quit-btn" id="quitBtn">✕ 結束</button>
   </div>
   <div class="timer-bar-wrap"><div class="timer-bar" id="timerBar"></div></div>
   <div class="combo-banner" id="comboBanner">🔥 COMBO ×5</div>
-  <button class="quit-btn" id="quitBtn">✕ 結束</button>
 
   <div class="question-area">
     <div class="progress-dots" id="progressDots"></div>
