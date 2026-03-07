@@ -45,19 +45,37 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 
 /* ===== HOME SCREEN ===== */
 #homeScreen { gap:0; }
+.home-logo-wrap {
+  display:flex; flex-direction:column; align-items:center;
+  margin-bottom:28px; position:relative;
+}
 .home-logo {
   font-family:'Zen Maru Gothic',sans-serif;
   font-size:clamp(3rem,10vw,6rem);
   font-weight:900;
-  background:linear-gradient(135deg,var(--sakura),var(--purple),var(--matcha));
+  background:linear-gradient(160deg, #ff9ec8 0%, var(--sakura) 25%, var(--purple) 55%, #7dd8ff 80%, var(--matcha) 100%);
   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  text-align:center; line-height:1.1; margin-bottom:8px;
-  filter:drop-shadow(0 0 30px var(--glow-pink));
+  text-align:center; line-height:1.15;
+  filter:drop-shadow(0 0 40px var(--glow-pink));
   animation:logoPulse 3s ease-in-out infinite;
+  letter-spacing:.02em;
+  width:100%;
 }
-@keyframes logoPulse { 0%,100%{filter:drop-shadow(0 0 20px var(--glow-pink))} 50%{filter:drop-shadow(0 0 50px var(--glow-pink)) drop-shadow(0 0 80px var(--glow-teal))} }
-.home-sub { color:var(--matcha); font-size:1rem; margin-bottom:24px; letter-spacing:.2em; text-align:center; opacity:.8; }
+@keyframes logoPulse {
+  0%,100%{ filter:drop-shadow(0 2px 2px rgba(0,0,0,.5)) drop-shadow(0 0 24px var(--glow-pink)); }
+  50%{ filter:drop-shadow(0 2px 2px rgba(0,0,0,.5)) drop-shadow(0 0 48px var(--glow-pink)) drop-shadow(0 0 80px var(--glow-teal)); }
+}
+.home-sub {
+  color:transparent;
+  background:linear-gradient(90deg, var(--matcha), #7dd8ff, var(--matcha));
+  -webkit-background-clip:text;
+  font-size:.88rem; margin-top:14px; letter-spacing:.35em;
+  text-align:center; opacity:.9;
+  font-family:'Zen Maru Gothic',sans-serif; font-weight:700;
+  width:100%;
+}
 
+/* ── KANA TABS ── */
 /* 平假名／片假名切換 */
 .kana-tabs { display:flex; gap:10px; width:100%; max-width:420px; margin-bottom:16px; }
 .kana-tab {
@@ -83,39 +101,77 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .stage-btn:hover::before { opacity:1; background:radial-gradient(ellipse at center,rgba(167,139,250,.08),transparent); }
 .stage-btn.selected { border-color:var(--purple); background:rgba(167,139,250,.12); box-shadow:0 0 22px rgba(167,139,250,.3); }
 .stage-btn.all-stage.selected { border-color:var(--yuzu); background:rgba(255,217,61,.08); box-shadow:0 0 22px rgba(255,217,61,.25); }
+.stage-btn.vocab-stage.selected { border-color:var(--matcha); background:rgba(0,229,200,.07); box-shadow:0 0 22px rgba(0,229,200,.2); }
 .stage-btn:active { transform:scale(.96); }
-.stage-icon { font-size:1.8rem; font-family:'Hiragino Sans','Yu Gothic','Zen Maru Gothic',sans-serif; line-height:1; color:var(--matcha); text-shadow:0 0 14px rgba(0,229,200,.5); }
+.stage-icon { font-size:1.8rem; font-family:'Zen Maru Gothic',sans-serif; font-weight:700; line-height:1; color:var(--matcha); text-shadow:0 0 14px rgba(0,229,200,.5); }
 .stage-name { font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:.9rem; color:var(--text); }
-.stage-desc { font-size:.68rem; color:var(--muted); }
 
-.diff-row { display:flex; gap:10px; margin-bottom:28px; }
-.diff-btn {
-  padding:10px 24px; border-radius:50px;
-  background:var(--card); border:2px solid var(--card2);
-  color:var(--muted); font-weight:700; font-size:.85rem;
-  transition:all .2s;
+/* ── DIFFICULTY ROW ── */
+.diff-row {
+  display:flex; gap:0; margin-bottom:24px; width:100%; max-width:420px;
+  background:var(--card); border-radius:14px; padding:4px;
+  border:1px solid rgba(255,255,255,.06);
 }
-.diff-btn:hover,.diff-btn.selected { color:var(--yuzu); border-color:var(--yuzu); background:rgba(255,217,61,.1); box-shadow:0 0 16px rgba(255,217,61,.3); }
+.diff-btn {
+  flex:1; padding:9px 0; border-radius:10px;
+  background:transparent; border:none;
+  color:var(--muted); font-weight:700; font-size:.82rem;
+  transition:all .2s; display:flex; align-items:center; justify-content:center; gap:6px;
+}
+.diff-btn svg { width:13px; height:13px; stroke:currentColor; fill:none; flex-shrink:0; }
+.diff-btn:hover { color:var(--text); }
+.diff-btn.selected { background:rgba(255,217,61,.12); color:var(--yuzu); box-shadow:0 1px 8px rgba(255,217,61,.15); }
 
 .start-btn {
-  background:linear-gradient(135deg,var(--sakura),#c84b8a);
+  position:relative;
+  background:linear-gradient(
+    105deg,
+    #d63384 0%,
+    #a855f7 30%,
+    #ff5fa0 48%,
+    #fff8 50%,
+    #ff5fa0 52%,
+    #a855f7 70%,
+    #d63384 100%
+  );
+  background-size:300% 100%;
   color:white; border:none; border-radius:50px;
   padding:18px 60px; font-family:'Zen Maru Gothic',sans-serif;
   font-size:1.2rem; font-weight:700;
-  box-shadow:0 6px 30px var(--glow-pink);
-  transition:all .2s; letter-spacing:.05em;
+  letter-spacing:.08em;
+  animation:btnShimmer 5s ease-in-out infinite;
+  transition:transform .2s;
 }
-.start-btn:hover { transform:translateY(-3px) scale(1.03); box-shadow:0 12px 40px var(--glow-pink); }
+@keyframes btnShimmer {
+  0%   { background-position:200% 0; box-shadow:0 6px 30px rgba(255,107,157,.55), 0 0 0 1.5px rgba(255,180,210,.2) inset; }
+  50%  { background-position:0% 0;   box-shadow:0 6px 44px rgba(168,85,247,.65), 0 0 60px rgba(168,85,247,.2), 0 0 0 1.5px rgba(200,160,255,.3) inset; }
+  100% { background-position:-200% 0; box-shadow:0 6px 30px rgba(255,107,157,.55), 0 0 0 1.5px rgba(255,180,210,.2) inset; }
+}
+.start-btn:hover { transform:translateY(-3px) scale(1.02); }
 .start-btn:active { transform:scale(.97); }
 
 .leaderboard-link {
-  margin-top:12px; background:transparent;
-  border:1.5px solid rgba(167,139,250,.35);
-  color:var(--purple); font-size:.85rem; font-weight:700;
-  padding:10px 28px; border-radius:50px;
-  text-decoration:none; opacity:.8; transition:all .2s;
+  margin-top:8px;
+  display:flex; align-items:center; gap:10px;
+  background:transparent; border:none;
+  padding:10px 4px;
+  color:var(--text); transition:all .22s; position:relative;
+  width:auto;
 }
-.leaderboard-link:hover { opacity:1; border-color:var(--purple); box-shadow:0 0 16px rgba(167,139,250,.3); }
+.leaderboard-link:hover { opacity:.8; transform:translateX(2px); }
+.leaderboard-link:active { transform:scale(.97); }
+.lb-link-left { display:flex; align-items:center; gap:10px; flex:1; }
+.lb-link-icon {
+  width:30px; height:30px; border-radius:8px; flex-shrink:0;
+  background:linear-gradient(135deg, rgba(255,217,61,.2), rgba(255,160,30,.1));
+  border:1px solid rgba(255,217,61,.3);
+  display:flex; align-items:center; justify-content:center;
+}
+.lb-link-icon svg { width:16px; height:16px; stroke:var(--yuzu); fill:none; stroke-width:1.8; stroke-linejoin:round; stroke-linecap:round; }
+.lb-link-title { font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:.88rem; color:var(--text); }
+.lb-link-sub { font-size:.75rem; color:var(--muted); margin-left:6px; }
+.lb-link-arrow { display:flex; align-items:center; color:var(--muted); margin-left:auto; }
+.lb-link-arrow svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2.2; }
 
 /* ===== GAME SCREEN ===== */
 #gameScreen { justify-content:flex-start; padding-top:80px; gap:0; }
@@ -233,8 +289,8 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 
 /* ===== LEADERBOARD SCREEN ===== */
 #lbScreen { justify-content:flex-start; padding-top:48px; padding-bottom:48px; gap:0; overflow-y:auto; }
-.lb-header { text-align:center; margin-bottom:24px; width:100%; max-width:520px; }
-.lb-crown { font-size:3rem; margin-bottom:8px; animation:rankBounce .8s cubic-bezier(.34,1.56,.64,1) both; }
+.lb-header { text-align:center; margin-bottom:20px; width:100%; max-width:420px; }
+.lb-crown { margin-bottom:8px; animation:rankBounce .8s cubic-bezier(.34,1.56,.64,1) both; }
 .lb-title {
   font-family:'Zen Maru Gothic',sans-serif; font-size:1.8rem; font-weight:900;
   background:linear-gradient(135deg,var(--yuzu),var(--sakura));
@@ -242,7 +298,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   margin-bottom:4px;
 }
 .lb-subtitle { color:var(--muted); font-size:.85rem; }
-.lb-list { width:100%; max-width:520px; display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+.lb-list { width:100%; max-width:420px; display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
 .lb-row {
   background:var(--card);
   border-radius:16px; padding:14px 20px;
@@ -279,29 +335,36 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .lb-empty {
   color:var(--muted); text-align:center; padding:48px 24px; font-size:.95rem;
   background:var(--card); border-radius:20px; border:1px dashed rgba(255,255,255,.08);
-  width:100%; max-width:520px;
+  width:100%; max-width:420px;
 }
-.lb-empty-icon { font-size:3rem; margin-bottom:12px; }
-.lb-filter { display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:16px; width:100%; max-width:520px; }
-.lb-kana-tabs { display:flex; gap:8px; }
+.lb-empty-icon { font-size:2rem; margin-bottom:12px; }
+.lb-filter { display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:16px; width:100%; max-width:420px; }
+.lb-kana-tabs { display:flex; gap:10px; width:100%; }
 .lb-filter-btn {
-  padding:7px 22px; border-radius:50px;
-  background:var(--card); border:1.5px solid rgba(255,255,255,.08);
-  color:var(--muted); font-size:.82rem; font-weight:700; transition:all .2s;
+  flex:1; padding:10px 0; border-radius:50px;
+  background:var(--card); border:2px solid var(--card2);
+  color:var(--muted); font-size:.88rem; font-weight:700;
+  font-family:'Zen Maru Gothic',sans-serif; transition:all .2s;
 }
-.lb-filter-btn.active { border-color:var(--sakura); color:var(--sakura); background:rgba(255,107,157,.1); }
+.lb-filter-btn.active { border-color:var(--sakura); color:var(--sakura); background:rgba(255,107,157,.1); box-shadow:0 0 16px rgba(255,107,157,.2); }
 .lb-filter-btn:hover:not(.active) { border-color:rgba(255,255,255,.2); color:var(--text); }
-.lb-stage-select {
-  background:var(--card); border:1.5px solid rgba(255,255,255,.12);
-  color:var(--text); border-radius:12px; padding:9px 16px;
-  font-size:.85rem; font-weight:700; font-family:'Zen Maru Gothic',sans-serif;
-  width:100%; max-width:300px; cursor:pointer; outline:none; transition:all .2s;
-  appearance:none; -webkit-appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat; background-position:right 14px center;
+
+/* 四個關卡按鈕 — 跟難度列同款 pill */
+.lb-stage-row {
+  display:flex; gap:0; width:100%;
+  background:var(--card); border-radius:14px; padding:4px;
+  border:1px solid rgba(255,255,255,.06);
 }
-.lb-stage-select:focus { border-color:var(--purple); box-shadow:0 0 12px rgba(167,139,250,.2); }
-.lb-stage-select option { background:#1a1625; color:var(--text); }
+.lb-stage-btn {
+  flex:1; padding:9px 0; border-radius:10px;
+  background:transparent; border:none;
+  color:var(--muted); font-weight:700; font-size:.78rem;
+  font-family:'Zen Maru Gothic',sans-serif;
+  transition:all .2s; display:flex; align-items:center; justify-content:center; gap:5px;
+}
+.lb-stage-btn .lb-stage-kana { font-size:.9rem; }
+.lb-stage-btn:hover { color:var(--text); }
+.lb-stage-btn.active { background:rgba(167,139,250,.14); color:var(--purple); box-shadow:0 1px 8px rgba(167,139,250,.15); }
 
 /* SCREEN FLASH */
 .flash { position:fixed;inset:0;pointer-events:none;z-index:200;opacity:0;transition:opacity .15s; }
@@ -313,13 +376,29 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .score-popup { position:fixed; pointer-events:none; z-index:300; font-family:'Orbitron',sans-serif; font-weight:700; animation:popupFly .8s ease forwards; }
 @keyframes popupFly { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-60px) scale(1.4)} }
 
+.stage-btn.vocab-stage.selected { border-color:var(--matcha); background:rgba(0,229,200,.08); box-shadow:0 0 22px rgba(0,229,200,.25); }
+.stage-btn.vocab-stage { display:none; }
+.stage-btn.vocab-stage.visible { display:flex; }
+
+/* WEAK REVIEW BANNER */
+.weak-banner {
+  width:100%; max-width:420px;
+  background:rgba(167,139,250,.1); border:1.5px solid rgba(167,139,250,.3);
+  border-radius:14px; padding:10px 16px; margin-bottom:16px;
+  font-size:.82rem; color:var(--purple); text-align:center; display:none;
+}
+.weak-banner.show { display:block; }
+
 @media(max-width:480px) {
   .screen { padding:20px 16px; }
   .mode-grid { grid-template-columns:1fr 1fr; max-width:100%; }
-  .options-grid { grid-template-columns:1fr 1fr; }
+  .options-grid { grid-template-columns:1fr 1fr; gap:10px; }
+  .opt-btn { padding:14px 8px; font-size:.95rem; border-radius:14px; }
   .result-stats { grid-template-columns:repeat(3,1fr); }
-  .game-header { padding:12px 16px; }
-  .hud-value { font-size:1rem; }
+  .game-header { padding:10px 12px; gap:4px; }
+  .hud-value { font-size:.95rem; }
+  .hud-label { font-size:.6rem; }
+  .quit-btn { padding:5px 10px; font-size:.75rem; }
   .result-name-row { flex-direction:column; align-items:stretch; }
   .save-btn { width:100%; text-align:center; }
   .result-btns { flex-direction:column; align-items:stretch; width:100%; max-width:480px; }
@@ -328,6 +407,17 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   .diff-row { flex-wrap:wrap; justify-content:center; }
   #resultScreen { padding:20px 16px; }
   .r-stat-num { font-size:1.2rem; }
+  .kana-char { font-size:clamp(4rem,22vw,8rem) !important; }
+  .kana-card { padding:24px 20px 18px; border-radius:22px; margin-bottom:14px; }
+  .question-area { margin-bottom:14px; }
+  #gameScreen { padding-top:72px; }
+  .home-logo { font-size:clamp(2.6rem,9vw,5rem); }
+  .stage-grid { gap:8px; }
+  .stage-btn { padding:14px 10px; border-radius:14px; }
+  .stage-icon { font-size:1.5rem; }
+  .stage-name { font-size:.85rem; }
+  .diff-btn { padding:8px 18px; font-size:.82rem; }
+  .feedback-row { font-size:.9rem; min-height:28px; }
 }
 </style>
 </head>
@@ -341,8 +431,10 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 
 <!-- HOME -->
 <div class="screen" id="homeScreen">
-  <div class="home-logo">五十音<br>大冒險</div>
-  <div class="home-sub">GO · GO · にほんご！</div>
+  <div class="home-logo-wrap">
+    <div class="home-logo">五十音<br>大冒險</div>
+    <div class="home-sub">GO · GO · にほんご！</div>
+  </div>
 
   <!-- 平假名／片假名 -->
   <div class="kana-tabs">
@@ -355,33 +447,54 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
     <button class="stage-btn selected" data-stage="seion">
       <div class="stage-icon">あ</div>
       <div class="stage-name">清音</div>
-      <div class="stage-desc">46個基本假名</div>
     </button>
     <button class="stage-btn" data-stage="dakuten">
       <div class="stage-icon">が</div>
       <div class="stage-name">濁音</div>
-      <div class="stage-desc">が行～ど行</div>
     </button>
     <button class="stage-btn" data-stage="youon">
       <div class="stage-icon">きゃ</div>
       <div class="stage-name">拗音</div>
-      <div class="stage-desc">きゃ・しゃ・ちゃ...</div>
     </button>
     <button class="stage-btn all-stage" data-stage="all">
       <div class="stage-icon">∞</div>
-      <div class="stage-name">全部混合</div>
-      <div class="stage-desc">清音＋濁音＋拗音</div>
+      <div class="stage-name">混戰模式</div>
+    </button>
+    <button class="stage-btn vocab-stage" data-stage="vocab">
+      <div class="stage-icon">文</div>
+      <div class="stage-name">字彙</div>
     </button>
   </div>
 
   <div class="diff-row">
-    <button class="diff-btn selected" data-diff="normal">⚡ 普通</button>
-    <button class="diff-btn" data-diff="hard">🔥 困難</button>
-    <button class="diff-btn" data-diff="blitz">💀 閃電</button>
+    <button class="diff-btn selected" data-diff="normal">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/><path d="M12 12v4"/></svg>
+      普通
+    </button>
+    <button class="diff-btn" data-diff="hard">
+      <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      困難
+    </button>
+    <button class="diff-btn" data-diff="blitz">
+      <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      閃電
+    </button>
   </div>
 
   <button class="start-btn" id="startBtn">▶ 開始冒險！</button>
-  <button class="leaderboard-link" id="lbBtn">🏆 查看排行榜</button>
+  <div class="weak-banner" id="weakBanner">🎯 上次答錯了 <span id="weakCount">0</span> 個假名，將優先出現在這次練習中！</div>
+  <button class="leaderboard-link" id="lbBtn">
+    <div class="lb-link-left">
+      <div class="lb-link-icon">
+        <svg viewBox="0 0 24 24"><path d="M6 9H4a2 2 0 0 0 0 4c.6 3 3.4 5 8 5s7.4-2 8-5a2 2 0 0 0 0-4h-2"/><path d="M6 4h12v9a6 6 0 0 1-12 0V4z"/><path d="M10 21v2M14 21v2M8 23h8"/></svg>
+      </div>
+      <span class="lb-link-title">排行榜</span>
+      <span class="lb-link-sub">查看最強冒險家</span>
+    </div>
+    <div class="lb-link-arrow">
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+  </button>
 </div>
 
 <!-- GAME -->
@@ -443,21 +556,29 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
     <button class="save-btn" id="saveBtn">儲存</button>
   </div>
   <div class="result-btns">
-    <button class="retry-btn" id="retryBtn">🔄 再玩一次</button>
-    <button class="home-btn2" id="homeBtn2">🏠 回首頁</button>
+    <button class="retry-btn" id="retryBtn">
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>再玩一次
+    </button>
+    <button class="home-btn2" id="homeBtn2">
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>回首頁
+    </button>
   </div>
 </div>
 
 <!-- LEADERBOARD -->
 <div class="screen hidden" id="lbScreen">
   <div class="lb-header">
-    <div class="lb-crown">🏆</div>
+    <div class="lb-crown">
+      <svg viewBox="0 0 24 24" width="48" height="48" stroke="var(--yuzu)" fill="none" stroke-width="1.5" style="display:block;margin:0 auto 8px"><path d="M2 20h20M4 20l2-10 6 5 4-8 4 8 2-5 2 10"/></svg>
+    </div>
     <div class="lb-title">排行榜</div>
     <div class="lb-subtitle">看看誰是五十音最強冒險家！</div>
   </div>
   <div class="lb-filter" id="lbFilter"></div>
   <div class="lb-list" id="lbList"></div>
-  <button class="back-btn" id="backBtn">← 回首頁</button>
+  <button class="back-btn" id="backBtn">
+    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>回首頁
+  </button>
 </div>
 
 <script type="module">
@@ -531,6 +652,7 @@ const DATA = {
     {char:'ワ',answer:'wa',type:'片假名'},{char:'ヲ',answer:'wo',type:'片假名'},{char:'ン',answer:'n',type:'片假名'},
     {char:'ガ',answer:'ga',type:'濁音'},{char:'ギ',answer:'gi',type:'濁音'},{char:'グ',answer:'gu',type:'濁音'},{char:'ゲ',answer:'ge',type:'濁音'},{char:'ゴ',answer:'go',type:'濁音'},
     {char:'ザ',answer:'za',type:'濁音'},{char:'ジ',answer:'ji',type:'濁音'},{char:'ズ',answer:'zu',type:'濁音'},{char:'ゼ',answer:'ze',type:'濁音'},{char:'ゾ',answer:'zo',type:'濁音'},
+    {char:'ダ',answer:'da',type:'濁音'},{char:'ヂ',answer:'ji',type:'濁音'},{char:'ヅ',answer:'zu',type:'濁音'},{char:'デ',answer:'de',type:'濁音'},{char:'ド',answer:'do',type:'濁音'},
     {char:'バ',answer:'ba',type:'濁音'},{char:'ビ',answer:'bi',type:'濁音'},{char:'ブ',answer:'bu',type:'濁音'},{char:'ベ',answer:'be',type:'濁音'},{char:'ボ',answer:'bo',type:'濁音'},
     {char:'パ',answer:'pa',type:'半濁音'},{char:'ピ',answer:'pi',type:'半濁音'},{char:'プ',answer:'pu',type:'半濁音'},{char:'ペ',answer:'pe',type:'半濁音'},{char:'ポ',answer:'po',type:'半濁音'},
     {char:'キャ',answer:'kya',type:'拗音'},{char:'シャ',answer:'sha',type:'拗音'},{char:'チャ',answer:'cha',type:'拗音'},{char:'ニャ',answer:'nya',type:'拗音'},
@@ -558,6 +680,27 @@ let score = 0, streak = 0, maxStreak = 0, correct = 0, total = 0;
 let timerVal = 60, timerInterval = null;
 let answered = false;
 let scoreHistory = [];
+
+// 弱點複習：記錄答錯的 char
+let weakSet = JSON.parse(localStorage.getItem('kanaWeakSet') || '{}');
+// 格式：{ 'hiragana_seion': ['あ','い',...], ... }
+
+function getWeakKey(){ return `${selectedKana}_${selectedStage}`; }
+function getWeakList(){ return weakSet[getWeakKey()] || []; }
+function addWeak(char){ const k=getWeakKey(); if(!weakSet[k])weakSet[k]=[]; if(!weakSet[k].includes(char))weakSet[k].push(char); localStorage.setItem('kanaWeakSet',JSON.stringify(weakSet)); }
+function removeWeak(char){ const k=getWeakKey(); if(!weakSet[k])return; weakSet[k]=weakSet[k].filter(c=>c!==char); localStorage.setItem('kanaWeakSet',JSON.stringify(weakSet)); }
+
+function updateWeakBanner(){
+  const list = getWeakList();
+  const banner = document.getElementById('weakBanner');
+  const cnt = document.getElementById('weakCount');
+  if(list.length > 0 && selectedStage !== 'vocab'){
+    cnt.textContent = list.length;
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+}
 
 const DIFF = { normal:{time:60,pts:10,bonus:5}, hard:{time:45,pts:15,bonus:8}, blitz:{time:25,pts:20,bonus:12} };
 const TYPE_COLORS = {'平假名':'#ff6b9d','片假名':'#00e5c8','濁音':'#a78bfa','半濁音':'#ffd93d','拗音':'#ff9f43','濁拗音':'#ee5a24','半濁拗音':'#fd9644','動物':'#26de81','自然':'#45aaf2','動詞':'#fd9644','形容詞':'#a55eea','日常':'#ff6b9d','交通':'#00e5c8','地點':'#ffd93d'};
@@ -621,12 +764,8 @@ function updateStageIcons(){
   document.querySelectorAll('.stage-btn[data-stage]').forEach(btn => {
     const stage = btn.dataset.stage;
     const iconEl = btn.querySelector('.stage-icon');
-    const descEl = btn.querySelector('.stage-desc');
     if(iconEl && STAGE_ICONS[selectedKana] && STAGE_ICONS[selectedKana][stage]){
       iconEl.textContent = STAGE_ICONS[selectedKana][stage];
-    }
-    if(descEl && STAGE_DESCS[stage] && STAGE_DESCS[stage][selectedKana]){
-      descEl.textContent = STAGE_DESCS[stage][selectedKana];
     }
   });
 }
@@ -637,11 +776,21 @@ function toggleKana(btn){
   document.querySelectorAll('.kana-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   updateStageIcons();
+  // vocab 只在平假名時顯示
+  const vocabBtn = document.querySelector('.stage-btn.vocab-stage');
+  if(selectedKana === 'hiragana'){
+    vocabBtn.classList.add('visible');
+  } else {
+    vocabBtn.classList.remove('visible');
+    if(selectedStage === 'vocab'){ selectedStage='seion'; document.querySelectorAll('.stage-btn').forEach(b=>b.classList.remove('selected')); document.querySelector('.stage-btn[data-stage="seion"]').classList.add('selected'); }
+  }
+  updateWeakBanner();
 }
 function toggleStage(btn){
   selectedStage = btn.dataset.stage;
   document.querySelectorAll('.stage-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
+  updateWeakBanner();
 }
 function setDiff(btn){
   document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('selected'));
@@ -651,6 +800,13 @@ function setDiff(btn){
 
 // ===== BUILD QUESTIONS =====
 function buildQuestions(){
+  // vocab 模式
+  if(selectedStage === 'vocab'){
+    let pool = [...DATA.vocab];
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+    return pool.slice(0,40);
+  }
+
   let pool = DATA[selectedKana] || [];
   if(selectedStage === 'seion'){
     pool = pool.filter(q => q.type === '平假名' || q.type === '片假名');
@@ -661,7 +817,22 @@ function buildQuestions(){
   }
   // 'all' → 全部不篩選
   pool = pool.filter((v,i,a)=>a.findIndex(x=>x.char===v.char)===i);
-  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+
+  // 弱點複習：答錯的優先放前面
+  const weak = getWeakList();
+  if(weak.length > 0){
+    const weakPool = pool.filter(q => weak.includes(q.char));
+    const normalPool = pool.filter(q => !weak.includes(q.char));
+    // 弱點題出現 2 次機率：放到前面，最多佔一半
+    const weakSlots = Math.min(weakPool.length * 2, 20);
+    const weakExpanded = [];
+    for(let i=0;i<weakSlots;i++) weakExpanded.push(weakPool[i % weakPool.length]);
+    for(let i=weakExpanded.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[weakExpanded[i],weakExpanded[j]]=[weakExpanded[j],weakExpanded[i]];}
+    for(let i=normalPool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[normalPool[i],normalPool[j]]=[normalPool[j],normalPool[i]];}
+    pool = [...weakExpanded, ...normalPool];
+  } else {
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  }
   return pool.slice(0,40);
 }
 
@@ -764,6 +935,8 @@ function checkAnswer(selected, correctAns, btn, e){
     if(streak>=3){ const cb=document.getElementById('comboBanner'); cb.textContent=`🔥 COMBO ×${streak}`; cb.classList.add('show'); setTimeout(()=>cb.classList.remove('show'),1500); }
     const dot=document.getElementById(`dot${Math.min(qIndex,19)}`);
     if(dot){dot.classList.remove('current');dot.classList.add('done-correct');}
+    // 弱點：答對了就移除弱點記錄
+    removeWeak(questions[qIndex]?.char);
   } else {
     streak=0;
     btn.classList.add('wrong-anim');
@@ -775,6 +948,8 @@ function checkAnswer(selected, correctAns, btn, e){
     if(e){spawnParticles(e.clientX,e.clientY,false);scorePopup(e.clientX,e.clientY,0,false);}
     const dot=document.getElementById(`dot${Math.min(qIndex,19)}`);
     if(dot){dot.classList.remove('current');dot.classList.add('done-wrong');}
+    // 弱點：答錯就加入弱點清單
+    if(selectedStage !== 'vocab') addWeak(questions[qIndex]?.char);
   }
 
   updateHUD();
@@ -954,12 +1129,11 @@ async function renderLB(kana='hiragana', stage='seion'){
 
   const list = document.getElementById('lbList');
   const filterEl = document.getElementById('lbFilter');
-  list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">⏳</div>載入中...</div>`;
+  list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>載入中...</div>`;
 
-  // 建立 UI
   filterEl.innerHTML = '';
 
-  // 平假名／片假名 tab
+  // 平假名／片假名 tabs
   const kanaRow = document.createElement('div');
   kanaRow.className = 'lb-kana-tabs';
   [{ key:'hiragana', label:'ひ 平假名' }, { key:'katakana', label:'カ 片假名' }].forEach(k => {
@@ -967,32 +1141,32 @@ async function renderLB(kana='hiragana', stage='seion'){
     btn.className = 'lb-filter-btn' + (kana===k.key ? ' active' : '');
     btn.textContent = k.label;
     btn.addEventListener('click', () => {
-      const sel = document.getElementById('lbStageSelect');
-      renderLB(k.key, sel ? sel.value : stage);
+      const activeStage = filterEl.querySelector('.lb-stage-btn.active')?.dataset.stage || stage;
+      renderLB(k.key, activeStage);
     });
     kanaRow.appendChild(btn);
   });
   filterEl.appendChild(kanaRow);
 
-  // 關卡下拉
+  // 四個關卡 pill 按鈕
   const stages = [
-    { key:'seion',   label:'清音（基本46音）' },
-    { key:'dakuten', label:'濁音（が行～ど行）' },
-    { key:'youon',   label:'拗音（きゃ・しゃ...）' },
-    { key:'all',     label:'全部混合' }
+    { key:'seion',   label:'清音',  kana_h:'あ', kana_k:'ア' },
+    { key:'dakuten', label:'濁音',  kana_h:'が', kana_k:'ガ' },
+    { key:'youon',   label:'拗音',  kana_h:'きゃ', kana_k:'キャ' },
+    { key:'all',     label:'混戰',  kana_h:'∞', kana_k:'∞' }
   ];
-  const sel = document.createElement('select');
-  sel.id = 'lbStageSelect';
-  sel.className = 'lb-stage-select';
+  const stageRow = document.createElement('div');
+  stageRow.className = 'lb-stage-row';
   stages.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s.key;
-    opt.textContent = s.label;
-    if(s.key === stage) opt.selected = true;
-    sel.appendChild(opt);
+    const btn = document.createElement('button');
+    btn.className = 'lb-stage-btn' + (stage===s.key ? ' active' : '');
+    btn.dataset.stage = s.key;
+    const icon = kana === 'hiragana' ? s.kana_h : s.kana_k;
+    btn.innerHTML = `<span class="lb-stage-kana">${icon}</span>${s.label}`;
+    btn.addEventListener('click', () => renderLB(kana, s.key));
+    stageRow.appendChild(btn);
   });
-  sel.addEventListener('change', () => renderLB(kana, sel.value));
-  filterEl.appendChild(sel);
+  filterEl.appendChild(stageRow);
 
   list.innerHTML = '';
   await loadMoreLB();
@@ -1018,7 +1192,7 @@ async function loadMoreLB(){
     loader.id = 'lbLoader';
     loader.className = 'lb-empty';
     loader.style.cssText = 'padding:16px;font-size:.85rem;';
-    loader.innerHTML = '⏳ 載入中...';
+    loader.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.5" style="display:inline;vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 載入中...';
     list.appendChild(loader);
   }
 
@@ -1034,7 +1208,7 @@ async function loadMoreLB(){
     loader.remove();
 
     if(snapshot.empty && lbRankOffset === 0){
-      list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">🎮</div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
+      list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
       lbHasMore = false;
       lbLoading = false;
       return;
@@ -1080,7 +1254,7 @@ async function loadMoreLB(){
     console.error(e);
     if(loader) loader.remove();
     if(lbRankOffset === 0){
-      list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon">❌</div>載入失敗，請稍後再試</div>`;
+      list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>載入失敗，請稍後再試</div>`;
     }
   }
   lbLoading = false;
@@ -1091,10 +1265,13 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
-function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); }
+function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); updateWeakBanner(); }
 
 // ===== INIT & EVENT BINDINGS =====
 showScreen('homeScreen');
+// 初始顯示 vocab 按鈕（平假名預設）
+document.querySelector('.stage-btn.vocab-stage').classList.add('visible');
+updateWeakBanner();
 
 // Kana tabs
 document.querySelectorAll('.kana-tab').forEach(btn=>{
