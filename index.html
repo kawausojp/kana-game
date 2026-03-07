@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>五十音大冒險 🎮</title>
+<title>五十音大冒險</title>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&family=Noto+Sans+TC:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -26,75 +26,6 @@
 html { scroll-behavior:smooth; }
 body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif; min-height:100vh; overflow-x:hidden; }
 
-/* CURSOR */
-#cur { display:none; }
-#cur2 { display:none; }
-.click-ripple {
-position:fixed; pointer-events:none; z-index:9999; border-radius:50%;
-transform:translate(-50%,-50%) scale(0);
-width:30px; height:30px;
-background:radial-gradient(circle, rgba(150,240,255,1) 0%, rgba(50,180,255,.6) 40%, transparent 70%);
-animation:rippleFade .4s ease-out forwards;
-}
-@keyframes rippleFade {
-0%   { transform:translate(-50%,-50%) scale(0);   opacity:1; }
-40%  { transform:translate(-50%,-50%) scale(1);   opacity:1; }
-100% { transform:translate(-50%,-50%) scale(2); opacity:0; }
-}
-.laser-ring {
-position:fixed; pointer-events:none; z-index:9998; border-radius:50%;
-transform:translate(-50%,-50%) scale(0);
-border:1.5px solid rgba(80,210,255,.8);
-width:14px; height:14px;
-animation:laserRing .4s ease-out forwards;
-}
-.laser-ring2 {
-position:fixed; pointer-events:none; z-index:9998; border-radius:50%;
-transform:translate(-50%,-50%) scale(0);
-border:1px solid rgba(180,240,255,.5);
-width:14px; height:14px;
-animation:laserRing .55s ease-out .06s forwards;
-}
-@keyframes laserRing {
-0%   { transform:translate(-50%,-50%) scale(0);  opacity:1; }
-100% { transform:translate(-50%,-50%) scale(4);  opacity:0; }
-}
-.laser-beam {
-position:fixed; pointer-events:none; z-index:9999;
-height:1.5px; border-radius:2px;
-background:linear-gradient(90deg, transparent, rgba(120,230,255,1), white, rgba(120,230,255,1), transparent);
-box-shadow:0 0 4px rgba(80,210,255,.9), 0 0 8px rgba(80,210,255,.4);
-transform-origin:left center;
-animation:beamShoot var(–dur,.4s) ease-out forwards;
-}
-@keyframes beamShoot {
-0%   { transform:rotate(var(–angle)) scaleX(0);  opacity:1; }
-40%  { transform:rotate(var(–angle)) scaleX(1);  opacity:1; }
-100% { transform:rotate(var(–angle)) scaleX(1) translateX(10px); opacity:0; }
-}
-.laser-spark {
-position:fixed; pointer-events:none; z-index:9999; border-radius:1px;
-width:2px; height:2px;
-background:white;
-box-shadow:0 0 3px rgba(120,230,255,1), 0 0 6px rgba(80,200,255,.7);
-animation:sparkFly var(–dur,.4s) ease-out forwards;
-}
-@keyframes sparkFly {
-0%   { transform:translate(-50%,-50%) translate(0,0) scale(1); opacity:1; }
-100% { transform:translate(-50%,-50%) translate(var(–dx),var(–dy)) scale(0); opacity:0; }
-}
-.laser-core {
-position:fixed; pointer-events:none; z-index:10000; border-radius:50%;
-width:12px; height:12px;
-background:radial-gradient(circle, white 0%, rgba(150,240,255,.9) 40%, transparent 70%);
-transform:translate(-50%,-50%);
-animation:coreFade .2s ease-out forwards;
-}
-@keyframes coreFade {
-0%   { transform:translate(-50%,-50%) scale(1.5); opacity:1; }
-100% { transform:translate(-50%,-50%) scale(0.2); opacity:0; }
-}
-
 /* STARS BG */
 .stars { position:fixed;inset:0;pointer-events:none;z-index:0; }
 .star { position:absolute;background:white;border-radius:50%;animation:twinkle var(–d,3s) ease-in-out infinite var(–delay,0s); }
@@ -115,16 +46,12 @@ animation:coreFade .2s ease-out forwards;
 font-family:‘Zen Maru Gothic’,sans-serif;
 font-size:clamp(3rem,10vw,6rem);
 font-weight:900;
-background:linear-gradient(135deg,var(–sakura),var(–purple),var(–matcha));
--webkit-background-clip:text;
-background-clip:text;
--webkit-text-fill-color:transparent;
-color:var(–sakura); /* fallback */
+color:var(–sakura);
 text-align:center; line-height:1.1; margin-bottom:8px;
-filter:drop-shadow(0 0 30px var(–glow-pink));
+text-shadow:0 0 40px rgba(255,107,157,.5);
 animation:logoPulse 3s ease-in-out infinite;
 }
-@keyframes logoPulse { 0%,100%{filter:drop-shadow(0 0 20px var(–glow-pink))} 50%{filter:drop-shadow(0 0 50px var(–glow-pink)) drop-shadow(0 0 80px var(–glow-teal))} }
+@keyframes logoPulse { 0%,100%{text-shadow:0 0 30px rgba(255,107,157,.4)} 50%{text-shadow:0 0 60px rgba(255,107,157,.7), 0 0 80px rgba(0,229,200,.3)} }
 .home-sub { color:var(–matcha); font-size:.9rem; margin-bottom:52px; letter-spacing:.22em; text-align:center; opacity:.7; }
 
 .kana-tabs { display:flex; gap:10px; margin-bottom:16px; width:100%; max-width:500px; }
@@ -237,7 +164,7 @@ display:flex; align-items:center; justify-content:center; gap:8px;
 position:fixed; top:0; left:0; right:0;
 display:flex; align-items:center; justify-content:space-between;
 padding:16px 28px;
-background:rgba(15,12,26,.85); backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+background:#0f0c1a;
 border-bottom:1px solid rgba(255,255,255,.06);
 z-index:50;
 }
@@ -256,12 +183,12 @@ z-index:50;
 
 .combo-banner {
 position:fixed; top:80px; left:50%; transform:translateX(-50%);
-background:linear-gradient(135deg,rgba(255,107,157,.25),rgba(167,139,250,.25));
-backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+background:rgba(255,107,157,.25);
 color:white; padding:5px 22px; border-radius:50px;
 font-family:‘Orbitron’,sans-serif; font-weight:700; font-size:.78rem; letter-spacing:.05em;
 z-index:50; opacity:0; pointer-events:none;
-box-shadow:0 2px 20px rgba(255,107,157,.1);
+box-shadow:0 2px 20px rgba(255,107,157,.15);
+white-space:nowrap;
 }
 .combo-banner.show { animation:comboFade 1.6s ease-out forwards; }
 @keyframes comboFade {
@@ -327,17 +254,16 @@ font-size:.75rem; font-weight:700; transition:all .2s;
 /* ===== QUIT DIALOG ===== */
 .quit-overlay {
 position:fixed; inset:0; z-index:200;
-background:rgba(8,6,18,.6); backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+background:rgba(8,6,18,.92);
 display:flex; align-items:center; justify-content:center;
 }
 .quit-overlay.hidden { display:none; }
 .quit-dialog {
-background:rgba(255,255,255,.06);
+background:#1a1530;
 border:1px solid rgba(255,255,255,.1);
 border-radius:28px; padding:40px 36px; text-align:center;
 max-width:300px; width:88%;
-box-shadow:0 24px 64px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08);
-backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+box-shadow:0 24px 64px rgba(0,0,0,.6);
 animation:dialogPop .22s cubic-bezier(.34,1.56,.64,1);
 }
 @keyframes dialogPop { from{transform:scale(.9);opacity:0} to{transform:scale(1);opacity:1} }
@@ -373,7 +299,7 @@ border:1px solid rgba(255,255,255,.08);
 background:rgba(255,255,255,.04);
 color:rgba(255,255,255,.35); font-weight:500; font-size:.8rem;
 cursor:pointer; transition:all .25s; letter-spacing:.04em;
-backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+
 }
 .quit-confirm-btn:hover { color:rgba(255,120,120,.7); border-color:rgba(255,100,100,.2); background:rgba(255,80,80,.06); }
 .quit-confirm-btn:active { transform:scale(.97); opacity:.7; transition:all .08s; }
@@ -421,11 +347,7 @@ display:block; margin:0 auto 12px;
 .lb-title {
 font-family:‘Orbitron’,sans-serif; font-size:1.3rem; font-weight:700;
 letter-spacing:.18em; text-transform:uppercase;
-background:linear-gradient(135deg,var(–yuzu),var(–sakura));
--webkit-background-clip:text;
-background-clip:text;
--webkit-text-fill-color:transparent;
-color:var(–yuzu); /* fallback */
+color:var(–yuzu);
 margin-bottom:6px;
 }
 .lb-subtitle { color:rgba(255,255,255,.25); font-size:.72rem; letter-spacing:.1em; }
@@ -465,7 +387,7 @@ display:flex; align-items:center; gap:14px;
 border:1px solid rgba(255,255,255,.06);
 transition:transform .2s, box-shadow .2s;
 animation:slideIn .3s ease both;
-backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+
 }
 .lb-row:hover { transform:translateX(4px); box-shadow:0 4px 20px rgba(0,0,0,.25); }
 .lb-row.rank-1 { border-color:rgba(255,217,61,.25); background:linear-gradient(135deg,rgba(255,217,61,.07),rgba(255,255,255,.03)); }
@@ -508,7 +430,7 @@ display:flex; align-items:center; justify-content:center;
 background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09);
 color:rgba(255,255,255,.35); border-radius:12px; padding:12px 32px;
 font-weight:600; font-size:.8rem; letter-spacing:.06em;
-transition:all .2s; cursor:pointer; backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+transition:all .2s; cursor:pointer;
 display:flex; align-items:center; gap:4px;
 }
 .back-btn:hover { border-color:rgba(255,107,157,.3); color:var(–sakura); background:rgba(255,107,157,.05); }
@@ -678,7 +600,7 @@ display:flex; align-items:center; gap:4px;
     </div>
   </div>
   <div class="result-name-row">
-    <input class="name-input" id="playerName" placeholder="輸入你的名字存入排行榜 🏆" maxlength="12">
+    <input class="name-input" id="playerName" placeholder="輸入你的名字存入排行榜" maxlength="12">
     <button class="save-btn" id="saveBtn">儲存</button>
   </div>
   <div class="result-btns">
@@ -709,49 +631,6 @@ display:flex; align-items:center; gap:4px;
 </div>
 
 <script type="module">
-// ===== CURSOR =====
-// ===== LASER HIT EFFECT =====
-document.addEventListener('click', e => {
-  const x = e.clientX, y = e.clientY;
-
-  const durations = { 'laser-core':.25, 'laser-ring':.45, 'laser-ring2':.65, 'click-ripple':.45 };
-
-  const spawn = (cls, extra='', dur=0.8) => {
-    const el = document.createElement('div');
-    el.className = cls;
-    el.style.cssText = `left:${x}px;top:${y}px;${extra}`;
-    document.body.appendChild(el);
-    // iOS Safari 保險：用 setTimeout 強制清除
-    const ms = (durations[cls] || dur) * 1000 + 100;
-    setTimeout(() => el.remove(), ms);
-    return el;
-  };
-
-  spawn('laser-core');
-  spawn('laser-ring');
-  spawn('laser-ring2');
-  spawn('click-ripple');
-
-  const beamCount = 8;
-  for(let i = 0; i < beamCount; i++){
-    const angle = (360 / beamCount) * i + Math.random() * 8;
-    const len   = 14 + Math.random() * 14;
-    const dur   = (.25 + Math.random() * .12);
-    spawn('laser-beam', `width:${len.toFixed(1)}px;--angle:${angle.toFixed(1)}deg;--dur:${dur.toFixed(2)}s;`, dur);
-  }
-
-  for(let i = 0; i < 12; i++){
-    const angle = Math.random() * 360;
-    const dist  = 10 + Math.random() * 20;
-    const rad   = angle * Math.PI / 180;
-    const dx    = (Math.cos(rad) * dist).toFixed(1);
-    const dy    = (Math.sin(rad) * dist).toFixed(1);
-    const dur   = (.25 + Math.random() * .18);
-    const size  = (1.5 + Math.random() * 2).toFixed(1);
-    spawn('laser-spark', `--dx:${dx}px;--dy:${dy}px;--dur:${dur.toFixed(2)}s;width:${size}px;height:${size}px;`, dur);
-  }
-});
-
 // ===== STARS =====
 document.addEventListener('DOMContentLoaded', () => {
   const starsEl=document.getElementById('starsBg');
