@@ -1240,20 +1240,37 @@ async function renderLB(kana='hiragana', stage='seion'){
   lbLastDoc = null;
   lbHasMore = true;
   lbRankOffset = 0;
+  lbLoading = false;
 
   const list = document.getElementById('lbList');
   const filterEl = document.getElementById('lbFilter');
 
-  // 平滑淡出現有內容
-  list.style.transition = 'opacity .2s ease';
+  // 1. 淡出
+  list.style.transition = 'opacity .18s ease';
   list.style.opacity = '0';
-  await new Promise(r => setTimeout(r, 200));
+  await new Promise(r => setTimeout(r, 180));
 
-  list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>載入中...</div>`;
+  // 2. 清空並顯示 skeleton loader
+  list.innerHTML = '';
+  const loader = document.createElement('div');
+  loader.id = 'lbLoader';
+  loader.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;padding:40px 0;color:var(--muted);font-size:.85rem;';
+  loader.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.8" style="animation:spin 1s linear infinite"><path d="M12 2a10 10 0 0 1 10 10"/></svg>載入中...`;
+  list.appendChild(loader);
 
+  // spin keyframe（只加一次）
+  if(!document.getElementById('spinStyle')){
+    const s=document.createElement('style');s.id='spinStyle';
+    s.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
+    document.head.appendChild(s);
+  }
+
+  // 3. 淡入 loader
+  list.style.transition = 'opacity .18s ease';
+  requestAnimationFrame(()=>{ list.style.opacity='1'; });
+
+  // 4. 重建 filter UI
   filterEl.innerHTML = '';
-
-  // 平假名／片假名 tabs
   const kanaRow = document.createElement('div');
   kanaRow.className = 'lb-kana-tabs';
   [{ key:'hiragana', label:'ひ 平假名' }, { key:'katakana', label:'カ 片假名' }].forEach(k => {
@@ -1268,7 +1285,6 @@ async function renderLB(kana='hiragana', stage='seion'){
   });
   filterEl.appendChild(kanaRow);
 
-  // 四個關卡 pill 按鈕
   const stages = [
     { key:'seion',   label:'清音',  kana_h:'あ', kana_k:'ア' },
     { key:'dakuten', label:'濁音',  kana_h:'が', kana_k:'ガ' },
@@ -1281,21 +1297,18 @@ async function renderLB(kana='hiragana', stage='seion'){
     const btn = document.createElement('button');
     btn.className = 'lb-stage-btn' + (stage===s.key ? ' active' : '');
     btn.dataset.stage = s.key;
-    const icon = kana === 'hiragana' ? s.kana_h : s.kana_k;
-    btn.innerHTML = `<span class="lb-stage-kana">${icon}</span>${s.label}`;
+    btn.innerHTML = `<span class="lb-stage-kana">${kana==='hiragana'?s.kana_h:s.kana_k}</span>${s.label}`;
     btn.addEventListener('click', () => renderLB(kana, s.key));
     stageRow.appendChild(btn);
   });
   filterEl.appendChild(stageRow);
 
-  list.innerHTML = '';
+  // 5. 載入資料
   await loadMoreLB();
 
   const screen = document.getElementById('lbScreen');
   screen.onscroll = () => {
-    if(screen.scrollTop + screen.clientHeight >= screen.scrollHeight - 100){
-      loadMoreLB();
-    }
+    if(screen.scrollTop + screen.clientHeight >= screen.scrollHeight - 100) loadMoreLB();
   };
 }
 
@@ -1304,17 +1317,6 @@ async function loadMoreLB(){
   lbLoading = true;
 
   const list = document.getElementById('lbList');
-
-  // 顯示載入指示
-  let loader = document.getElementById('lbLoader');
-  if(!loader){
-    loader = document.createElement('div');
-    loader.id = 'lbLoader';
-    loader.className = 'lb-empty';
-    loader.style.cssText = 'padding:16px;font-size:.85rem;';
-    loader.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.5" style="display:inline;vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 載入中...';
-    list.appendChild(loader);
-  }
 
   try {
     let q;
@@ -1325,17 +1327,22 @@ async function loadMoreLB(){
     }
 
     const snapshot = await getDocs(q);
-    loader.remove();
 
-    // 淡入
+    // 移除 loader
+    const loader = document.getElementById('lbLoader');
+    if(loader) loader.remove();
+
+    // 淡出 → 換內容 → 淡入
+    list.style.transition = 'opacity .15s ease';
     list.style.opacity = '0';
-    list.style.transition = 'opacity .25s ease';
+    await new Promise(r => setTimeout(r, 150));
 
     if(snapshot.empty && lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
-      requestAnimationFrame(() => { list.style.opacity = '1'; });
       lbHasMore = false;
       lbLoading = false;
+      list.style.transition = 'opacity .2s ease';
+      requestAnimationFrame(()=>{ list.style.opacity='1'; });
       return;
     }
 
@@ -1365,10 +1372,7 @@ async function loadMoreLB(){
     });
 
     lbRankOffset += snapshot.size;
-    // 淡入新內容
-    requestAnimationFrame(() => { list.style.opacity = '1'; });
 
-    // 沒有更多了
     if(!lbHasMore && lbRankOffset > 0){
       const end = document.createElement('div');
       end.className = 'lb-empty';
@@ -1377,11 +1381,17 @@ async function loadMoreLB(){
       list.appendChild(end);
     }
 
+    list.style.transition = 'opacity .22s ease';
+    requestAnimationFrame(()=>{ list.style.opacity='1'; });
+
   } catch(e) {
     console.error(e);
+    const loader = document.getElementById('lbLoader');
     if(loader) loader.remove();
     if(lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>載入失敗，請稍後再試</div>`;
+      list.style.transition = 'opacity .2s ease';
+      requestAnimationFrame(()=>{ list.style.opacity='1'; });
     }
   }
   lbLoading = false;
