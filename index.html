@@ -67,6 +67,8 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   font-family:'Zen Maru Gothic',sans-serif; cursor:pointer; transition:all .2s;
 }
 .kana-tab.active { border-color:var(--sakura); color:var(--sakura); background:rgba(255,107,157,.1); box-shadow:0 0 18px rgba(255,107,157,.25); }
+.kana-tab:active { transform:scale(.95); }
+.kana-tab:not(.active):hover { border-color:rgba(255,255,255,.25); color:var(--text); }
 
 /* 4個關卡格 */
 .stage-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:420px; margin-bottom:24px; }
@@ -81,6 +83,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .stage-btn:hover::before { opacity:1; background:radial-gradient(ellipse at center,rgba(167,139,250,.08),transparent); }
 .stage-btn.selected { border-color:var(--purple); background:rgba(167,139,250,.12); box-shadow:0 0 22px rgba(167,139,250,.3); }
 .stage-btn.all-stage.selected { border-color:var(--yuzu); background:rgba(255,217,61,.08); box-shadow:0 0 22px rgba(255,217,61,.25); }
+.stage-btn:active { transform:scale(.96); }
 .stage-icon { font-size:1.8rem; font-family:'Hiragino Sans','Yu Gothic','Zen Maru Gothic',sans-serif; line-height:1; color:var(--matcha); text-shadow:0 0 14px rgba(0,229,200,.5); }
 .stage-name { font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:.9rem; color:var(--text); }
 .stage-desc { font-size:.68rem; color:var(--muted); }
@@ -603,11 +606,37 @@ function scorePopup(x,y,pts,isCorrect){
 }
 
 // ===== KANA / STAGE / DIFF TOGGLES =====
+// 各關卡在平假名／片假名下的代表字
+const STAGE_ICONS = {
+  hiragana: { seion:'あ', dakuten:'が', youon:'きゃ' },
+  katakana: { seion:'ア', dakuten:'ガ', youon:'キャ' }
+};
+const STAGE_DESCS = {
+  seion:   { hiragana:'46個基本假名', katakana:'46個基本假名' },
+  dakuten: { hiragana:'が行～ど行',   katakana:'ガ行～ド行'   },
+  youon:   { hiragana:'きゃ・しゃ・ちゃ...', katakana:'キャ・シャ・チャ...' }
+};
+
+function updateStageIcons(){
+  document.querySelectorAll('.stage-btn[data-stage]').forEach(btn => {
+    const stage = btn.dataset.stage;
+    const iconEl = btn.querySelector('.stage-icon');
+    const descEl = btn.querySelector('.stage-desc');
+    if(iconEl && STAGE_ICONS[selectedKana] && STAGE_ICONS[selectedKana][stage]){
+      iconEl.textContent = STAGE_ICONS[selectedKana][stage];
+    }
+    if(descEl && STAGE_DESCS[stage] && STAGE_DESCS[stage][selectedKana]){
+      descEl.textContent = STAGE_DESCS[stage][selectedKana];
+    }
+  });
+}
+
 function toggleKana(btn){
   selectedKana = btn.dataset.kana;
   selectedModes = [selectedKana];
   document.querySelectorAll('.kana-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  updateStageIcons();
 }
 function toggleStage(btn){
   selectedStage = btn.dataset.stage;
