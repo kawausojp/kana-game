@@ -26,8 +26,28 @@ html { scroll-behavior:smooth; }
 body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif; min-height:100vh; overflow-x:hidden; }
 
 /* CURSOR */
-#cur { width:16px;height:16px;background:var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .1s;mix-blend-mode:screen; }
-#cur2 { width:36px;height:36px;border:2px solid var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:transform .25s;opacity:.4; }
+#cur { width:12px;height:12px;background:var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .1s;mix-blend-mode:screen; }
+#cur2 { width:32px;height:32px;border:1.5px solid var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:transform .2s;opacity:.3; }
+
+/* 點擊水濺 */
+.click-ripple {
+  position:fixed; pointer-events:none; z-index:9997;
+  border-radius:50%; transform:translate(-50%,-50%) scale(0);
+  animation:clickRipple var(--dur,.55s) ease-out forwards;
+}
+@keyframes clickRipple {
+  0%   { transform:translate(-50%,-50%) scale(0);   opacity:.9; }
+  100% { transform:translate(-50%,-50%) scale(1);   opacity:0;  }
+}
+.click-drop {
+  position:fixed; pointer-events:none; z-index:9997;
+  border-radius:50%;
+  animation:clickDrop var(--dur,.5s) cubic-bezier(.2,.8,.3,1) forwards;
+}
+@keyframes clickDrop {
+  0%   { opacity:.9; transform:translate(-50%,-50%) scale(1); }
+  100% { opacity:0;  transform:translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); }
+}
 
 /* STARS BG */
 .stars { position:fixed;inset:0;pointer-events:none;z-index:0; }
@@ -205,14 +225,21 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .timer-bar { height:100%; background:linear-gradient(90deg,var(--matcha),var(--sakura)); transition:width .1s linear; border-radius:0 2px 2px 0; box-shadow:0 0 8px var(--glow-teal); }
 
 .combo-banner {
-  position:fixed; top:80px; left:50%; transform:translateX(-50%);
-  background:linear-gradient(135deg,var(--sakura),var(--purple));
-  color:white; padding:6px 24px; border-radius:50px;
-  font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:.85rem;
-  z-index:50; opacity:0; transition:opacity .3s;
-  box-shadow:0 4px 20px var(--glow-pink);
+  position:fixed; top:80px; left:50%; transform:translateX(-50%) translateY(-4px);
+  background:rgba(20,15,38,.72);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,107,157,.25);
+  color:white; padding:7px 20px 7px 14px; border-radius:40px;
+  font-family:'Orbitron',sans-serif; font-weight:700; font-size:.78rem; letter-spacing:.08em;
+  z-index:50; opacity:0; pointer-events:none;
+  box-shadow:0 4px 24px rgba(167,139,250,.2), 0 0 0 1px rgba(255,255,255,.04) inset;
+  display:flex; align-items:center; gap:8px;
+  transition:opacity .18s ease, transform .18s ease;
+  white-space:nowrap;
 }
-.combo-banner.show { opacity:1; }
+.combo-banner.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.combo-icon { display:flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:rgba(255,107,157,.18); border:1px solid rgba(255,107,157,.3); flex-shrink:0; }
+.combo-icon svg { width:11px; height:11px; stroke:var(--sakura); fill:none; stroke-width:2.2; }
 
 .question-area { width:100%; max-width:520px; text-align:center; margin-bottom:20px; }
 .category-tag {
@@ -306,14 +333,14 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   margin-bottom:4px;
 }
 .lb-subtitle { color:var(--muted); font-size:.85rem; }
-.lb-list { width:100%; max-width:420px; display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+.lb-list { width:100%; max-width:420px; display:flex; flex-direction:column; gap:8px; margin-bottom:20px; transition:opacity .3s ease; }
+.lb-list.fading { opacity:0; }
 .lb-row {
   background:var(--card);
   border-radius:16px; padding:14px 20px;
   display:flex; align-items:center; gap:14px;
   border:1px solid rgba(255,255,255,.07);
   transition:transform .2s, box-shadow .2s;
-  animation:slideIn .3s ease both;
 }
 .lb-row:hover { transform:translateX(4px); box-shadow:0 4px 20px rgba(0,0,0,.3); }
 .lb-row.rank-1 { border-color:rgba(255,217,61,.35); background:linear-gradient(135deg,rgba(255,217,61,.08),var(--card)); }
@@ -599,7 +626,10 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
     <button class="quit-btn" id="quitBtn">✕ 結束</button>
   </div>
   <div class="timer-bar-wrap"><div class="timer-bar" id="timerBar"></div></div>
-  <div class="combo-banner" id="comboBanner">🔥 COMBO ×5</div>
+  <div class="combo-banner" id="comboBanner">
+    <div class="combo-icon"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+    <span id="comboText">COMBO ×3</span>
+  </div>
 
   <div class="question-area">
     <div class="progress-dots" id="progressDots"></div>
@@ -649,7 +679,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 <div class="screen hidden" id="lbScreen">
   <div class="lb-header">
     <div class="lb-crown">
-      <svg viewBox="0 0 24 24" width="48" height="48" stroke="var(--yuzu)" fill="none" stroke-width="1.5" style="display:block;margin:0 auto 8px"><path d="M2 20h20M4 20l2-10 6 5 4-8 4 8 2-5 2 10"/></svg>
+      <svg viewBox="0 0 24 24" width="48" height="48" stroke="var(--yuzu)" fill="none" stroke-width="1.5" style="display:block;margin:0 auto 8px"><path d="M6 9H4a2 2 0 0 0 0 4c.6 3 3.4 5 8 5s7.4-2 8-5a2 2 0 0 0 0-4h-2"/><path d="M6 4h12v9a6 6 0 0 1-12 0V4z"/><path d="M10 21v2M14 21v2M8 23h8"/></svg>
     </div>
     <div class="lb-title">排行榜</div>
     <div class="lb-subtitle">看看誰是五十音最強冒險家！</div>
@@ -667,12 +697,41 @@ const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
 let mx=0,my=0;
 document.addEventListener('mousemove',e=>{
   mx=e.clientX;my=e.clientY;
-  cur.style.transform=`translate(${mx-8}px,${my-8}px)`;
-  cur2.style.transform=`translate(${mx-18}px,${my-18}px)`;
+  cur.style.transform=`translate(${mx-6}px,${my-6}px)`;
+  cur2.style.transform=`translate(${mx-16}px,${my-16}px)`;
 });
 document.querySelectorAll('button,a,.mode-btn').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{cur.style.transform+=' scale(2)';});
-  el.addEventListener('mouseleave',()=>{});
+  el.addEventListener('mouseenter',()=>{ cur.style.transform=`translate(${mx-6}px,${my-6}px) scale(2)`; });
+  el.addEventListener('mouseleave',()=>{ cur.style.transform=`translate(${mx-6}px,${my-6}px) scale(1)`; });
+});
+
+// 點擊水濺
+document.addEventListener('click', e=>{
+  const x=e.clientX, y=e.clientY;
+  const colors=['#ff6b9d','#ffadd0','#ffffff','#c084fc'];
+
+  // 漣漪環（2層）
+  for(let r=0;r<2;r++){
+    const el=document.createElement('div');
+    el.className='click-ripple';
+    const sz=18+r*22;
+    el.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;border:1.5px solid ${colors[r]};--dur:${.4+r*.15}s;animation-delay:${r*.05}s;box-shadow:0 0 6px ${colors[r]}66;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 700);
+  }
+
+  // 水滴（6顆）
+  for(let i=0;i<6;i++){
+    const el=document.createElement('div');
+    el.className='click-drop';
+    const angle=(i/6)*Math.PI*2+Math.random()*.5;
+    const dist=18+Math.random()*28;
+    const sz=2.5+Math.random()*3.5;
+    const c=colors[Math.floor(Math.random()*colors.length)];
+    el.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${c};box-shadow:0 0 4px ${c};--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;--dur:${.35+Math.random()*.2}s;animation-delay:${Math.random()*.05}s;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 650);
+  }
 });
 
 // ===== STARS =====
@@ -1043,7 +1102,7 @@ function checkAnswer(selected, correctAns, btn, e){
     if(streak>=3)sfxCombo();
     flashScreen('correct-flash');
     if(e){spawnParticles(e.clientX,e.clientY,true);scorePopup(e.clientX,e.clientY,pts,true);}
-    if(streak>=3){ const cb=document.getElementById('comboBanner'); cb.textContent=`🔥 COMBO ×${streak}`; cb.classList.add('show'); setTimeout(()=>cb.classList.remove('show'),1500); }
+    if(streak>=3){ const cb=document.getElementById('comboBanner'); document.getElementById('comboText').textContent=`COMBO ×${streak}`; cb.classList.add('show'); clearTimeout(cb._t); cb._t=setTimeout(()=>cb.classList.remove('show'),900); }
     const dot=document.getElementById(`dot${Math.min(qIndex,19)}`);
     if(dot){dot.classList.remove('current');dot.classList.add('done-correct');}
     // 弱點：答對了就移除弱點記錄
@@ -1245,31 +1304,14 @@ async function renderLB(kana='hiragana', stage='seion'){
   const list = document.getElementById('lbList');
   const filterEl = document.getElementById('lbFilter');
 
-  // 1. 淡出
-  list.style.transition = 'opacity .18s ease';
-  list.style.opacity = '0';
-  await new Promise(r => setTimeout(r, 180));
+  // 先 fade out
+  list.classList.add('fading');
+  await new Promise(r => setTimeout(r, 320));
 
-  // 2. 清空並顯示 skeleton loader
+  // 清空內容
   list.innerHTML = '';
-  const loader = document.createElement('div');
-  loader.id = 'lbLoader';
-  loader.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;padding:40px 0;color:var(--muted);font-size:.85rem;';
-  loader.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.8" style="animation:spin 1s linear infinite"><path d="M12 2a10 10 0 0 1 10 10"/></svg>載入中...`;
-  list.appendChild(loader);
 
-  // spin keyframe（只加一次）
-  if(!document.getElementById('spinStyle')){
-    const s=document.createElement('style');s.id='spinStyle';
-    s.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
-    document.head.appendChild(s);
-  }
-
-  // 3. 淡入 loader
-  list.style.transition = 'opacity .18s ease';
-  requestAnimationFrame(()=>{ list.style.opacity='1'; });
-
-  // 4. 重建 filter UI
+  // 重建 filter UI
   filterEl.innerHTML = '';
   const kanaRow = document.createElement('div');
   kanaRow.className = 'lb-kana-tabs';
@@ -1303,7 +1345,22 @@ async function renderLB(kana='hiragana', stage='seion'){
   });
   filterEl.appendChild(stageRow);
 
-  // 5. 載入資料
+  // 顯示 loader，fade in
+  const loader = document.createElement('div');
+  loader.id = 'lbLoader';
+  loader.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;padding:40px 0;color:var(--muted);font-size:.85rem;';
+  loader.innerHTML = `<svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill="none" stroke-width="2" style="animation:spin 1s linear infinite"><path d="M12 2a10 10 0 0 1 10 10"/></svg>載入中...`;
+  list.appendChild(loader);
+
+  if(!document.getElementById('spinStyle')){
+    const s=document.createElement('style');s.id='spinStyle';
+    s.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
+    document.head.appendChild(s);
+  }
+
+  list.classList.remove('fading');
+
+  // 查詢資料
   await loadMoreLB();
 
   const screen = document.getElementById('lbScreen');
@@ -1328,21 +1385,17 @@ async function loadMoreLB(){
 
     const snapshot = await getDocs(q);
 
-    // 移除 loader
+    // fade out → 換內容 → fade in
+    list.classList.add('fading');
+    await new Promise(r => setTimeout(r, 320));
+
     const loader = document.getElementById('lbLoader');
     if(loader) loader.remove();
 
-    // 淡出 → 換內容 → 淡入
-    list.style.transition = 'opacity .15s ease';
-    list.style.opacity = '0';
-    await new Promise(r => setTimeout(r, 150));
-
     if(snapshot.empty && lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
-      lbHasMore = false;
-      lbLoading = false;
-      list.style.transition = 'opacity .2s ease';
-      requestAnimationFrame(()=>{ list.style.opacity='1'; });
+      lbHasMore = false; lbLoading = false;
+      list.classList.remove('fading');
       return;
     }
 
@@ -1355,7 +1408,6 @@ async function loadMoreLB(){
       const globalIndex = lbRankOffset + i;
       const row = document.createElement('div');
       row.className = 'lb-row' + (globalIndex < 3 ? ' ' + rankClasses[globalIndex] : '');
-      row.style.animationDelay = `${i * .04}s`;
       const diffLabel = {normal:'普通', hard:'困難', blitz:'閃電'}[entry.diff] || entry.diff;
       row.innerHTML = `
         <div class="lb-rank-badge">${globalIndex + 1}</div>
@@ -1381,8 +1433,7 @@ async function loadMoreLB(){
       list.appendChild(end);
     }
 
-    list.style.transition = 'opacity .22s ease';
-    requestAnimationFrame(()=>{ list.style.opacity='1'; });
+    list.classList.remove('fading');
 
   } catch(e) {
     console.error(e);
@@ -1390,8 +1441,7 @@ async function loadMoreLB(){
     if(loader) loader.remove();
     if(lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>載入失敗，請稍後再試</div>`;
-      list.style.transition = 'opacity .2s ease';
-      requestAnimationFrame(()=>{ list.style.opacity='1'; });
+      list.classList.remove('fading');
     }
   }
   lbLoading = false;
