@@ -825,14 +825,6 @@ function toggleKana(btn){
   document.querySelectorAll('.kana-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   updateStageIcons();
-  // vocab 只在平假名時顯示
-  const vocabBtn = document.querySelector('.stage-btn.vocab-stage');
-  if(selectedKana === 'hiragana'){
-    vocabBtn.classList.add('visible');
-  } else {
-    vocabBtn.classList.remove('visible');
-    if(selectedStage === 'vocab'){ selectedStage='seion'; document.querySelectorAll('.stage-btn').forEach(b=>b.classList.remove('selected')); document.querySelector('.stage-btn[data-stage="seion"]').classList.add('selected'); }
-  }
   updateWeakBanner();
 }
 function toggleStage(btn){
@@ -849,13 +841,6 @@ function setDiff(btn){
 
 // ===== BUILD QUESTIONS =====
 function buildQuestions(){
-  // vocab 模式
-  if(selectedStage === 'vocab'){
-    let pool = [...DATA.vocab];
-    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-    return pool.slice(0,40);
-  }
-
   let pool = DATA[selectedKana] || [];
   if(selectedStage === 'seion'){
     pool = pool.filter(q => q.type === '平假名' || q.type === '片假名');
@@ -1331,8 +1316,6 @@ function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); updat
 
 // ===== INIT & EVENT BINDINGS =====
 showScreen('homeScreen');
-// 初始顯示 vocab 按鈕（平假名預設）
-document.querySelector('.stage-btn.vocab-stage').classList.add('visible');
 updateWeakBanner();
 
 // Kana tabs
