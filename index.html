@@ -715,44 +715,42 @@ display:flex; align-items:center; gap:4px;
 // ===== LASER HIT EFFECT =====
 document.addEventListener('click', e => {
   const x = e.clientX, y = e.clientY;
-  const spawn = (cls, extra='') => {
+
+  const durations = { 'laser-core':.25, 'laser-ring':.45, 'laser-ring2':.65, 'click-ripple':.45 };
+
+  const spawn = (cls, extra='', dur=0.8) => {
     const el = document.createElement('div');
     el.className = cls;
     el.style.cssText = `left:${x}px;top:${y}px;${extra}`;
     document.body.appendChild(el);
-    el.addEventListener('animationend', () => el.remove());
+    // iOS Safari 保險：用 setTimeout 強制清除
+    const ms = (durations[cls] || dur) * 1000 + 100;
+    setTimeout(() => el.remove(), ms);
     return el;
   };
 
-  // 閃光核心
   spawn('laser-core');
-
-  // 衝擊波環（兩層）
   spawn('laser-ring');
   spawn('laser-ring2');
-
-  // 中心光暈
   spawn('click-ripple');
 
-  // 雷射光束（8方向）
   const beamCount = 8;
   for(let i = 0; i < beamCount; i++){
     const angle = (360 / beamCount) * i + Math.random() * 8;
     const len   = 14 + Math.random() * 14;
-    const dur   = (.25 + Math.random() * .12).toFixed(2);
-    spawn('laser-beam', `width:${len}px;--angle:${angle}deg;--dur:${dur}s;`);
+    const dur   = (.25 + Math.random() * .12);
+    spawn('laser-beam', `width:${len.toFixed(1)}px;--angle:${angle.toFixed(1)}deg;--dur:${dur.toFixed(2)}s;`, dur);
   }
 
-  // 能量碎片（12粒）
   for(let i = 0; i < 12; i++){
     const angle = Math.random() * 360;
     const dist  = 10 + Math.random() * 20;
     const rad   = angle * Math.PI / 180;
     const dx    = (Math.cos(rad) * dist).toFixed(1);
     const dy    = (Math.sin(rad) * dist).toFixed(1);
-    const dur   = (.25 + Math.random() * .18).toFixed(2);
+    const dur   = (.25 + Math.random() * .18);
     const size  = (1.5 + Math.random() * 2).toFixed(1);
-    spawn('laser-spark', `--dx:${dx}px;--dy:${dy}px;--dur:${dur}s;width:${size}px;height:${size}px;`);
+    spawn('laser-spark', `--dx:${dx}px;--dy:${dy}px;--dur:${dur.toFixed(2)}s;width:${size}px;height:${size}px;`, dur);
   }
 });
 
