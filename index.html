@@ -23,7 +23,8 @@
 }
 * { margin:0; padding:0; box-sizing:border-box; cursor:none; }
 html { scroll-behavior:smooth; }
-body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif; min-height:100vh; overflow-x:hidden; }
+html, body { height:100%; overflow:hidden; }
+body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif; }
 
 /* CURSOR */
 #cur { width:12px;height:12px;background:var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .1s, opacity .4s ease;mix-blend-mode:screen; }
@@ -70,7 +71,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 }
 
 /* LAYOUT */
-.screen { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;min-height:100vh;transition:opacity .4s,transform .4s;z-index:10; }
+.screen { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;height:100%;transition:opacity .4s,transform .4s;z-index:10; }
 .screen.hidden { opacity:0;pointer-events:none;transform:scale(.95); }
 
 /* ===== HOME SCREEN ===== */
@@ -204,7 +205,9 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .lb-link-arrow svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2.2; }
 
 /* ===== GAME SCREEN ===== */
-#gameScreen { justify-content:flex-start; padding-top:80px; gap:0; }
+#homeScreen { gap:0; overflow:hidden; }
+#gameScreen { justify-content:flex-start; padding-top:80px; gap:0; overflow:hidden; }
+body.game-active { overflow:hidden; position:fixed; width:100%; }
 .game-header {
   position:fixed; top:0; left:0; right:0;
   display:flex; align-items:center; justify-content:space-between;
@@ -294,7 +297,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .quit-btn:hover { border-color:var(--coral); color:var(--coral); }
 
 /* ===== RESULT SCREEN ===== */
-#resultScreen { gap:16px; }
+#resultScreen { gap:16px; overflow:hidden; }
 .result-title { font-family:'Zen Maru Gothic',sans-serif; font-size:clamp(2rem,6vw,3.5rem); font-weight:900; text-align:center; }
 .result-rank {
   font-size:5rem; animation:rankBounce 1s cubic-bezier(.34,1.56,.64,1) .3s both;
@@ -325,7 +328,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .home-btn2:hover { border-color:var(--matcha); color:var(--matcha); }
 
 /* ===== LEADERBOARD SCREEN ===== */
-#lbScreen { justify-content:flex-start; padding-top:48px; padding-bottom:48px; gap:0; overflow-y:auto; }
+#lbScreen { justify-content:flex-start; padding-top:48px; padding-bottom:48px; gap:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 .lb-header { text-align:center; margin-bottom:20px; width:100%; max-width:420px; }
 .lb-crown { margin-bottom:8px; animation:rankBounce .8s cubic-bezier(.34,1.56,.64,1) both; }
 .lb-title {
@@ -456,7 +459,59 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .lb-list.fading        { opacity:0; transform:translateX(32px);  }
 .lb-list.fading-left   { opacity:0; transform:translateX(-32px); }
 
-/* FEEDBACK ROW */
+/* BRAND SIGNATURE */
+.brand-sig {
+  display:inline-flex; align-items:center; gap:5px;
+  margin-top:8px; padding:6px 14px;
+  border-radius:40px;
+  border:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.03);
+  text-decoration:none;
+  transition:all .25s;
+}
+.brand-sig:hover {
+  border-color:rgba(255,107,157,.25);
+  background:rgba(255,107,157,.05);
+  box-shadow:0 0 20px rgba(255,107,157,.08);
+}
+.brand-otter { font-size:.8rem; }
+.brand-name {
+  font-family:'Zen Maru Gothic',sans-serif; font-weight:700;
+  font-size:.68rem; letter-spacing:.03em;
+  color:rgba(255,255,255,.35);
+}
+.brand-divider { color:rgba(255,255,255,.15); font-size:.65rem; }
+.brand-ig-icon { color:rgba(255,255,255,.22); flex-shrink:0; }
+.brand-handle {
+  font-family:'Orbitron',sans-serif; font-weight:600;
+  font-size:.58rem; letter-spacing:.05em;
+  color:rgba(255,255,255,.22);
+}
+.brand-sig:hover .brand-name,
+.brand-sig:hover .brand-handle { color:rgba(255,107,157,.7); }
+.brand-sig:hover .brand-ig-icon { color:rgba(255,107,157,.5); }
+.brand-sig:hover {
+  border-color:rgba(255,107,157,.25);
+  background:rgba(255,107,157,.05);
+  box-shadow:0 0 20px rgba(255,107,157,.08);
+}
+.brand-otter { color:rgba(255,255,255,.3); display:flex; align-items:center; }
+.brand-name {
+  font-family:'Zen Maru Gothic',sans-serif; font-weight:700;
+  font-size:.72rem; letter-spacing:.04em;
+  color:rgba(255,255,255,.4);
+}
+.brand-divider { color:rgba(255,255,255,.15); font-size:.7rem; }
+.brand-ig-icon { color:rgba(255,255,255,.25); flex-shrink:0; }
+.brand-handle {
+  font-family:'Orbitron',sans-serif; font-weight:600;
+  font-size:.6rem; letter-spacing:.06em;
+  color:rgba(255,255,255,.25);
+}
+.brand-sig:hover .brand-name,
+.brand-sig:hover .brand-handle { color:rgba(255,107,157,.7); }
+.brand-sig:hover .brand-otter,
+.brand-sig:hover .brand-ig-icon { color:rgba(255,107,157,.5); }
 .feedback-row { min-height:32px; text-align:center; font-weight:700; font-size:1rem; margin-top:16px; animation:fadeIn .3s ease; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
 
@@ -643,7 +698,14 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
       <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
     </div>
   </button>
-</div>
+
+  <a class="brand-sig" href="https://www.instagram.com/kawauso_japanese/" target="_blank" rel="noopener">
+    <span class="brand-otter">🦦</span>
+    <span class="brand-name">小水獺學日文</span>
+    <span class="brand-divider">·</span>
+    <svg class="brand-ig-icon" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+    <span class="brand-handle">kawauso.japanese</span>
+  </a>
 
 <!-- GAME -->
 <div class="screen hidden" id="gameScreen">
@@ -1085,6 +1147,7 @@ function startGame(){
   const cfg=DIFF[difficulty];
   timerVal=cfg.time; timerMax=cfg.time;
   showScreen('gameScreen');
+  document.body.classList.add('game-active');
   buildProgressDots();
   showQuestion();
   startTimer();
@@ -1225,6 +1288,7 @@ function quitGame(){
 // ===== END GAME =====
 function endGame(){
   clearInterval(timerInterval);
+  document.body.classList.remove('game-active');
   showScreen('resultScreen');
   const acc=total>0?Math.round(correct/total*100):0;
   document.getElementById('rScore').textContent=score;
@@ -1495,7 +1559,7 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
-function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); updateWeakBanner(); }
+function goHome(){ clearInterval(timerInterval); document.body.classList.remove('game-active'); showScreen('homeScreen'); updateWeakBanner(); }
 
 // ===== INIT & EVENT BINDINGS =====
 showScreen('homeScreen');
