@@ -22,9 +22,9 @@
   --glow-teal: rgba(0,229,200,0.4);
 }
 * { margin:0; padding:0; box-sizing:border-box; cursor:none; }
-html, body { height:100%; overflow:hidden; }
-body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif; }
-.screen { position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;transition:opacity .4s,transform .4s;z-index:10; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif; min-height:100vh; overflow-x:hidden; }
+.screen { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;min-height:100vh;transition:opacity .4s,transform .4s;z-index:10; }
 
 /* CURSOR */
 #cur { width:12px;height:12px;background:var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .1s, opacity .4s ease;mix-blend-mode:screen; }
@@ -1553,6 +1553,12 @@ async function loadMoreLB(){
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
+  // 排行榜以外的畫面鎖定捲動
+  if(id === 'lbScreen'){
+    document.body.style.overflow = '';
+  } else {
+    document.body.style.overflow = 'hidden';
+  }
 }
 function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); updateWeakBanner(); }
 
