@@ -24,7 +24,8 @@
 * { margin:0; padding:0; box-sizing:border-box; cursor:none; }
 html { scroll-behavior:smooth; }
 html, body { height:100%; overflow:hidden; }
-body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif; }
+body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif; position:relative; }
+.screen { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;height:100%;overflow:hidden;transition:opacity .4s,transform .4s;z-index:10; }
 
 /* CURSOR */
 #cur { width:12px;height:12px;background:var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .1s, opacity .4s ease;mix-blend-mode:screen; }
@@ -71,7 +72,6 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 }
 
 /* LAYOUT */
-.screen { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;height:100%;transition:opacity .4s,transform .4s;z-index:10; }
 .screen.hidden { opacity:0;pointer-events:none;transform:scale(.95); }
 
 /* ===== HOME SCREEN ===== */
