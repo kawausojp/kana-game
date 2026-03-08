@@ -29,8 +29,6 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 /* CURSOR */
 #cur { width:12px;height:12px;background:var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .1s, opacity .4s ease;mix-blend-mode:screen;opacity:0; }
 #cur2 { width:32px;height:32px;border:1.5px solid var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:transform .2s, opacity .4s ease;opacity:0; }
-#cur.hidden-cur { opacity:0; }
-#cur2.hidden-cur { opacity:0; }
 
 /* 點擊水濺 */
 .click-ripple {
@@ -77,7 +75,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 #homeScreen { gap:0; }
 .home-logo-wrap {
   display:flex; flex-direction:column; align-items:center;
-  margin-bottom:28px; position:relative;
+  margin-bottom:20px; position:relative;
 }
 .home-logo {
   font-family:'Zen Maru Gothic',sans-serif;
@@ -243,7 +241,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .combo-icon { display:flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:rgba(255,107,157,.18); border:1px solid rgba(255,107,157,.3); flex-shrink:0; }
 .combo-icon svg { width:11px; height:11px; stroke:var(--sakura); fill:none; stroke-width:2.2; }
 
-.question-area { width:100%; max-width:520px; text-align:center; margin-bottom:16px; }
+.question-area { width:100%; max-width:520px; text-align:center; margin-bottom:0; }
 .category-tag {
   display:inline-block; padding:4px 14px; border-radius:20px;
   font-size:.72rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
@@ -266,7 +264,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 @keyframes charPop { from{transform:scale(.5) rotate(-10deg);opacity:0} to{transform:scale(1) rotate(0deg);opacity:1} }
 .kana-type-hint { color:var(--muted); font-size:.8rem; margin-top:8px; }
 
-.progress-dots { display:flex; gap:6px; justify-content:center; margin-bottom:12px; flex-wrap:wrap; max-width:300px; margin-left:auto; margin-right:auto; }
+.progress-dots { display:flex; gap:6px; justify-content:center; margin:10px auto 10px; flex-wrap:wrap; max-width:300px; }
 .prog-dot { width:8px;height:8px;border-radius:50%;background:var(--card2);transition:all .3s; }
 .prog-dot.done-correct { background:var(--matcha); box-shadow:0 0 6px var(--glow-teal); }
 .prog-dot.done-wrong { background:var(--coral); }
@@ -316,10 +314,10 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 }
 .save-btn:hover { transform:scale(1.05); box-shadow:0 4px 20px var(--glow-pink); }
 .result-btns { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
-.retry-btn { background:var(--card); border:2px solid var(--card2); color:var(--text); border-radius:50px; padding:14px 32px; font-weight:700; transition:all .2s; }
-.retry-btn:hover { border-color:var(--sakura); color:var(--sakura); }
-.home-btn2 { background:transparent; border:2px solid var(--muted); color:var(--muted); border-radius:50px; padding:14px 32px; font-weight:700; transition:all .2s; }
-.home-btn2:hover { border-color:var(--matcha); color:var(--matcha); }
+.retry-btn { background:var(--card); border:2px solid var(--sakura); color:var(--sakura); border-radius:50px; padding:14px 32px; font-weight:700; transition:all .2s; }
+.retry-btn:hover { background:rgba(255,107,157,.12); box-shadow:0 0 20px var(--glow-pink); transform:translateY(-2px); }
+.home-btn2 { background:var(--card); border:2px solid var(--card2); color:var(--muted); border-radius:50px; padding:14px 32px; font-weight:700; transition:all .2s; }
+.home-btn2:hover { border-color:var(--matcha); color:var(--matcha); transform:translateY(-2px); }
 
 /* ===== LEADERBOARD SCREEN ===== */
 #lbScreen { justify-content:flex-start; padding-top:48px; padding-bottom:48px; gap:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
@@ -369,8 +367,12 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 
 .back-btn:hover { border-color:var(--sakura); color:var(--sakura); box-shadow:0 0 16px var(--glow-pink); }
 .lb-empty {
-  color:var(--muted); text-align:center; padding:48px 24px; font-size:.95rem;
+  color:var(--muted); text-align:center; padding:40px 24px; font-size:.95rem;
   background:var(--card); border-radius:20px; border:1px dashed rgba(255,255,255,.08);
+  width:100%; max-width:420px;
+}
+.lb-empty-footer {
+  color:var(--muted); text-align:center; padding:12px 0; font-size:.8rem;
   width:100%; max-width:420px;
 }
 .lb-empty-icon { font-size:2rem; margin-bottom:12px; }
@@ -508,7 +510,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .brand-sig:hover .brand-handle { color:rgba(255,107,157,.7); }
 .brand-sig:hover .brand-otter,
 .brand-sig:hover .brand-ig-icon { color:rgba(255,107,157,.5); }
-.feedback-row { min-height:32px; text-align:center; font-weight:700; font-size:1rem; margin-top:16px; animation:fadeIn .3s ease; }
+.feedback-row { min-height:36px; text-align:center; font-weight:700; font-size:1rem; margin-top:12px; animation:fadeIn .3s ease; display:flex; align-items:center; justify-content:center; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
 
 /* QUIT CONFIRM MODAL */
@@ -732,13 +734,13 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   </div>
 
   <div class="question-area">
-    <div class="progress-dots" id="progressDots"></div>
     <div class="kana-card">
       <span class="kana-char" id="kanaChar" style="color:var(--text)">あ</span>
       <div class="kana-type-hint" id="kanaHint">這個平假名的讀音是？</div>
     </div>
   </div>
 
+  <div class="progress-dots" id="progressDots"></div>
   <div class="options-grid" id="optionsGrid"></div>
   <div class="feedback-row" id="feedbackRow"></div>
 </div>
@@ -1422,6 +1424,8 @@ function renderLB(kana='hiragana', stage='seion'){
 
   setTimeout(() => {
     list.innerHTML = '';
+    // 清除 lbScreen 層級可能殘留的 back-btn
+    document.querySelectorAll('#lbScreen > .back-btn').forEach(b => b.remove());
 
   // filter UI
   filterEl.innerHTML = '';
@@ -1533,8 +1537,7 @@ async function loadMoreLB(){
     lbRankOffset += snapshot.size;
     if(!lbHasMore && lbRankOffset > 0){
       const end = document.createElement('div');
-      end.className = 'lb-empty';
-      end.style.cssText = 'padding:16px;font-size:.8rem;background:none;border:none;';
+      end.className = 'lb-empty-footer';
       end.textContent = `── 共 ${lbRankOffset} 位冒險家 ──`;
       list.appendChild(end);
       addBackBtn(list);
@@ -1553,6 +1556,7 @@ async function loadMoreLB(){
 }
 
 function addBackBtn(list){
+  if(list.querySelector('.back-btn')) return; // 已存在就不重複加
   const btn = document.createElement('button');
   btn.className = 'back-btn';
   btn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>回首頁`;
