@@ -287,9 +287,6 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 @keyframes correctPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
 @keyframes wrongShake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
 
-.feedback-row { min-height:32px; text-align:center; font-weight:700; font-size:1rem; margin-top:4px; animation:fadeIn .3s ease; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
-
 .quit-btn { background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--muted); padding:6px 14px; border-radius:50px; font-size:.8rem; transition:all .2s; white-space:nowrap; }
 .quit-btn:hover { border-color:var(--coral); color:var(--coral); }
 
@@ -1553,12 +1550,6 @@ async function loadMoreLB(){
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
-  // 排行榜以外的畫面鎖定捲動
-  if(id === 'lbScreen'){
-    document.body.style.overflow = '';
-  } else {
-    document.body.style.overflow = 'hidden';
-  }
 }
 function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); updateWeakBanner(); }
 
