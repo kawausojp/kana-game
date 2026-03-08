@@ -204,7 +204,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .lb-link-arrow svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2.2; }
 
 /* ===== GAME SCREEN ===== */
-#gameScreen { justify-content:flex-start; padding-top:80px; gap:0; }
+#gameScreen { justify-content:center; padding-top:80px; padding-bottom:24px; gap:0; }
 .game-header {
   position:fixed; top:0; left:0; right:0;
   display:flex; align-items:center; justify-content:space-between;
@@ -243,18 +243,18 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .combo-icon { display:flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:rgba(255,107,157,.18); border:1px solid rgba(255,107,157,.3); flex-shrink:0; }
 .combo-icon svg { width:11px; height:11px; stroke:var(--sakura); fill:none; stroke-width:2.2; }
 
-.question-area { width:100%; max-width:520px; text-align:center; margin-bottom:20px; }
+.question-area { width:100%; max-width:520px; text-align:center; margin-bottom:16px; }
 .category-tag {
   display:inline-block; padding:4px 14px; border-radius:20px;
   font-size:.72rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
-  margin-bottom:20px;
+  margin-bottom:16px;
 }
 
 .kana-card {
   background:var(--card);
   border:2px solid rgba(255,255,255,.08);
-  border-radius:28px; padding:32px 40px 24px;
-  margin-bottom:20px; position:relative;
+  border-radius:28px; padding:28px 40px 20px;
+  margin-bottom:16px; position:relative;
   box-shadow:0 20px 60px rgba(0,0,0,.4);
 }
 .kana-char {
@@ -272,11 +272,11 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .prog-dot.done-wrong { background:var(--coral); }
 .prog-dot.current { background:var(--sakura); transform:scale(1.4); box-shadow:0 0 8px var(--glow-pink); }
 
-.options-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; width:100%; max-width:520px; }
+.options-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; width:100%; max-width:520px; }
 .opt-btn {
   background:var(--card); border:2px solid rgba(255,255,255,.1);
-  border-radius:16px; padding:18px 12px; color:var(--text);
-  font-family:'Noto Sans TC',sans-serif; font-size:1.05rem; font-weight:700;
+  border-radius:20px; padding:26px 12px; color:var(--text);
+  font-family:'Noto Sans TC',sans-serif; font-size:1.2rem; font-weight:700;
   transition:all .18s; position:relative; overflow:hidden;
 }
 .opt-btn::after { content:''; position:absolute; inset:0; opacity:0; border-radius:14px; transition:opacity .2s; }
@@ -581,7 +581,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   .screen { padding:20px 16px; }
   .mode-grid { grid-template-columns:1fr 1fr; max-width:100%; }
   .options-grid { grid-template-columns:1fr 1fr; gap:10px; }
-  .opt-btn { padding:14px 8px; font-size:.95rem; border-radius:14px; }
+  .opt-btn { padding:22px 8px; font-size:1.05rem; border-radius:18px; }
   .result-stats { grid-template-columns:repeat(3,1fr); }
   .game-header { padding:10px 12px; gap:4px; }
   .hud-value { font-size:.95rem; }
@@ -1416,9 +1416,9 @@ function renderLB(kana='hiragana', stage='seion'){
   const list = document.getElementById('lbList');
   const filterEl = document.getElementById('lbFilter');
 
-  // 淡出後再重建內容
-  list.style.transition = 'opacity .18s ease';
-  list.style.opacity = '0';
+  // filter 和 list 一起淡出
+  const fadeEls = [filterEl, list];
+  fadeEls.forEach(el => { el.style.transition = 'opacity .18s ease'; el.style.opacity = '0'; });
 
   setTimeout(() => {
     list.innerHTML = '';
@@ -1476,8 +1476,8 @@ function renderLB(kana='hiragana', stage='seion'){
     if(screen.scrollTop + screen.clientHeight >= screen.scrollHeight - 100) loadMoreLB();
   };
 
-    // 淡入
-    requestAnimationFrame(() => { list.style.opacity = '1'; });
+    // filter 和 list 一起淡入
+    requestAnimationFrame(() => { fadeEls.forEach(el => { el.style.opacity = '1'; }); });
   }, 180);
 }
 
