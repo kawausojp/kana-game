@@ -207,7 +207,6 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 /* ===== GAME SCREEN ===== */
 #homeScreen { gap:0; overflow:hidden; }
 #gameScreen { justify-content:flex-start; padding-top:80px; gap:0; overflow:hidden; }
-body.game-active { overflow:hidden; position:fixed; width:100%; }
 .game-header {
   position:fixed; top:0; left:0; right:0;
   display:flex; align-items:center; justify-content:space-between;
@@ -1147,7 +1146,6 @@ function startGame(){
   const cfg=DIFF[difficulty];
   timerVal=cfg.time; timerMax=cfg.time;
   showScreen('gameScreen');
-  document.body.classList.add('game-active');
   buildProgressDots();
   showQuestion();
   startTimer();
@@ -1288,7 +1286,6 @@ function quitGame(){
 // ===== END GAME =====
 function endGame(){
   clearInterval(timerInterval);
-  document.body.classList.remove('game-active');
   showScreen('resultScreen');
   const acc=total>0?Math.round(correct/total*100):0;
   document.getElementById('rScore').textContent=score;
@@ -1559,7 +1556,7 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
-function goHome(){ clearInterval(timerInterval); document.body.classList.remove('game-active'); showScreen('homeScreen'); updateWeakBanner(); }
+function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); updateWeakBanner(); }
 
 // ===== INIT & EVENT BINDINGS =====
 showScreen('homeScreen');
