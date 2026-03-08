@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>小水獺ㄉ五十音大冒險</title>
+<title>五十音大冒險 🎮</title>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&family=Noto+Sans+TC:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -364,10 +364,9 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   background:transparent; border:1.5px solid rgba(255,255,255,.15);
   color:var(--muted); border-radius:50px; padding:12px 32px;
   font-weight:700; font-size:.9rem; transition:all .2s;
-  position:sticky; bottom:24px; margin-top:8px; align-self:center;
-  backdrop-filter:blur(8px);
-  background:rgba(15,12,26,.6);
+  align-self:center; margin-top:8px; margin-bottom:8px;
 }
+
 .back-btn:hover { border-color:var(--sakura); color:var(--sakura); box-shadow:0 0 16px var(--glow-pink); }
 .lb-empty {
   color:var(--muted); text-align:center; padding:48px 24px; font-size:.95rem;
@@ -787,9 +786,6 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   </div>
   <div class="lb-filter" id="lbFilter"></div>
   <div class="lb-list" id="lbList"></div>
-  <button class="back-btn" id="backBtn">
-    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>回首頁
-  </button>
 </div>
 
 <script type="module">
@@ -1505,6 +1501,7 @@ async function loadMoreLB(){
 
     if(snapshot.empty && lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
+      addBackBtn(list);
       lbHasMore = false; lbLoading = false;
       return;
     }
@@ -1537,9 +1534,10 @@ async function loadMoreLB(){
     if(!lbHasMore && lbRankOffset > 0){
       const end = document.createElement('div');
       end.className = 'lb-empty';
-      end.style.cssText = 'padding:16px;font-size:.8rem;';
+      end.style.cssText = 'padding:16px;font-size:.8rem;background:none;border:none;';
       end.textContent = `── 共 ${lbRankOffset} 位冒險家 ──`;
       list.appendChild(end);
+      addBackBtn(list);
     }
 
   } catch(e) {
@@ -1548,9 +1546,18 @@ async function loadMoreLB(){
     if(loader) loader.remove();
     if(lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>載入失敗，請稍後再試</div>`;
+      addBackBtn(list);
     }
   }
   lbLoading = false;
+}
+
+function addBackBtn(list){
+  const btn = document.createElement('button');
+  btn.className = 'back-btn';
+  btn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>回首頁`;
+  btn.addEventListener('click', goHome);
+  list.appendChild(btn);
 }
 
 // ===== SCREEN MANAGEMENT =====
@@ -1617,7 +1624,7 @@ document.getElementById('retryBtn').addEventListener('click', retryGame);
 document.getElementById('homeBtn2').addEventListener('click', goHome);
 
 // Leaderboard screen
-document.getElementById('backBtn').addEventListener('click', goHome);
+// Leaderboard screen back button is now added dynamically in addBackBtn()
 </script>
 </body>
 </html>
