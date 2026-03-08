@@ -27,8 +27,8 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .screen { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;min-height:100vh;transition:opacity .4s,transform .4s;z-index:10; }
 
 /* CURSOR */
-#cur { width:12px;height:12px;background:var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .1s, opacity .4s ease;mix-blend-mode:screen; }
-#cur2 { width:32px;height:32px;border:1.5px solid var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:transform .2s, opacity .4s ease;opacity:.3; }
+#cur { width:12px;height:12px;background:var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .1s, opacity .4s ease;mix-blend-mode:screen;opacity:0; }
+#cur2 { width:32px;height:32px;border:1.5px solid var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:transform .2s, opacity .4s ease;opacity:0; }
 #cur.hidden-cur { opacity:0; }
 #cur2.hidden-cur { opacity:0; }
 
@@ -794,21 +794,15 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
 let mx=0,my=0,curHideTimer=null;
 
-function showCursor(){
-  cur.classList.remove('hidden-cur');
-  cur2.classList.remove('hidden-cur');
-  clearTimeout(curHideTimer);
-  curHideTimer = setTimeout(()=>{
-    cur.classList.add('hidden-cur');
-    cur2.classList.add('hidden-cur');
-  }, 1000);
-}
 
 document.addEventListener('mousemove',e=>{
   mx=e.clientX;my=e.clientY;
   cur.style.transform=`translate(${mx-6}px,${my-6}px)`;
   cur2.style.transform=`translate(${mx-16}px,${my-16}px)`;
-  showCursor();
+  cur.style.opacity='1';
+  cur2.style.opacity='.3';
+  clearTimeout(curHideTimer);
+  curHideTimer=setTimeout(()=>{ cur.style.opacity='0'; cur2.style.opacity='0'; },1000);
 });
 document.querySelectorAll('button,a,.mode-btn').forEach(el=>{
   el.addEventListener('mouseenter',()=>{ cur.style.transform=`translate(${mx-6}px,${my-6}px) scale(2)`; });
@@ -1551,6 +1545,18 @@ async function loadMoreLB(){
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
+  // 排行榜可以捲動，其他畫面鎖住
+  if(id === 'lbScreen'){
+    document.documentElement.style.overflow = '';
+    document.documentElement.style.height = '';
+    document.body.style.overflow = '';
+    document.body.style.height = '';
+  } else {
+    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.height = '100%';
+    document.body.style.overflow = 'hidden';
+    document.body.style.height = '100%';
+  }
 }
 function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); updateWeakBanner(); }
 
