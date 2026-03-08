@@ -22,10 +22,9 @@
   --glow-teal: rgba(0,229,200,0.4);
 }
 * { margin:0; padding:0; box-sizing:border-box; cursor:none; }
-html { scroll-behavior:smooth; }
 html, body { height:100%; overflow:hidden; }
-body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif; position:relative; }
-.screen { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;height:100%;overflow:hidden;transition:opacity .4s,transform .4s;z-index:10; }
+body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif; }
+.screen { position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;transition:opacity .4s,transform .4s;z-index:10; }
 
 /* CURSOR */
 #cur { width:12px;height:12px;background:var(--sakura);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .1s, opacity .4s ease;mix-blend-mode:screen; }
@@ -205,8 +204,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .lb-link-arrow svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2.2; }
 
 /* ===== GAME SCREEN ===== */
-#homeScreen { gap:0; overflow:hidden; }
-#gameScreen { justify-content:flex-start; padding-top:80px; gap:0; overflow:hidden; }
+#gameScreen { justify-content:flex-start; padding-top:80px; gap:0; }
 .game-header {
   position:fixed; top:0; left:0; right:0;
   display:flex; align-items:center; justify-content:space-between;
@@ -296,7 +294,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .quit-btn:hover { border-color:var(--coral); color:var(--coral); }
 
 /* ===== RESULT SCREEN ===== */
-#resultScreen { gap:16px; overflow:hidden; }
+#resultScreen { gap:16px; }
 .result-title { font-family:'Zen Maru Gothic',sans-serif; font-size:clamp(2rem,6vw,3.5rem); font-weight:900; text-align:center; }
 .result-rank {
   font-size:5rem; animation:rankBounce 1s cubic-bezier(.34,1.56,.64,1) .3s both;
