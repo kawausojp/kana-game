@@ -788,6 +788,9 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   </div>
   <div class="lb-filter" id="lbFilter"></div>
   <div class="lb-list" id="lbList"></div>
+  <button class="back-btn" id="backBtn">
+    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>回首頁
+  </button>
 </div>
 
 <script type="module">
@@ -1427,8 +1430,6 @@ function renderLB(kana='hiragana', stage='seion'){
 
   setTimeout(() => {
     list.innerHTML = '';
-    // 清除 lbScreen 層級可能殘留的 back-btn
-    document.querySelectorAll('#lbScreen > .back-btn').forEach(b => b.remove());
 
   // filter UI
   filterEl.innerHTML = '';
@@ -1510,7 +1511,6 @@ async function loadMoreLB(gen){
 
     if(snapshot.empty && lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
-      addBackBtn(list);
       lbHasMore = false; lbLoading = false;
       return;
     }
@@ -1545,7 +1545,6 @@ async function loadMoreLB(gen){
       end.className = 'lb-empty-footer';
       end.textContent = `── 共 ${lbRankOffset} 位冒險家 ──`;
       list.appendChild(end);
-      addBackBtn(list);
     }
 
   } catch(e) {
@@ -1555,21 +1554,12 @@ async function loadMoreLB(gen){
     if(loader) loader.remove();
     if(lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>載入失敗，請稍後再試</div>`;
-      addBackBtn(list);
     }
   }
   lbLoading = false;
 }
 
-function addBackBtn(list){
-  if(list.querySelector('.back-btn')) return; // 已存在就不重複加
-  const btn = document.createElement('button');
-  btn.className = 'back-btn';
-  btn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>回首頁`;
-  btn.addEventListener('click', goHome);
-  list.appendChild(btn);
-}
-
+document.getElementById('backBtn').addEventListener('click', goHome);
 // ===== SCREEN MANAGEMENT =====
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
