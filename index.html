@@ -320,8 +320,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 .home-btn2:hover { border-color:var(--matcha); color:var(--matcha); transform:translateY(-2px); }
 
 /* ===== LEADERBOARD SCREEN ===== */
-#lbScreen { justify-content:flex-start; padding-top:48px; padding-bottom:32px; gap:0; overflow-y:auto; -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; align-items:center; }
-#backBtn { margin-top:20px; margin-bottom:8px; flex-shrink:0; }
+#lbScreen { justify-content:flex-start; padding-top:48px; padding-bottom:48px; gap:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 .lb-header { text-align:center; margin-bottom:20px; width:100%; max-width:420px; }
 .lb-crown { margin-bottom:8px; animation:rankBounce .8s cubic-bezier(.34,1.56,.64,1) both; }
 .lb-title {
@@ -363,7 +362,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   background:transparent; border:1.5px solid rgba(255,255,255,.15);
   color:var(--muted); border-radius:50px; padding:12px 32px;
   font-weight:700; font-size:.9rem; transition:all .2s;
-  align-self:center;
+  align-self:center; margin-top:8px; margin-bottom:8px;
 }
 
 .back-btn:hover { border-color:var(--sakura); color:var(--sakura); box-shadow:0 0 16px var(--glow-pink); }
@@ -789,9 +788,6 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   </div>
   <div class="lb-filter" id="lbFilter"></div>
   <div class="lb-list" id="lbList"></div>
-  <button class="back-btn" id="backBtn">
-    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>回首頁
-  </button>
 </div>
 
 <script type="module">
@@ -1412,15 +1408,12 @@ async function showLeaderboard(){
   renderLB('hiragana', 'seion');
 }
 
-let lbGeneration = 0; // 每次 renderLB 遞增，防止舊的 async 回調污染新榜
-
 function renderLB(kana='hiragana', stage='seion'){
   lbCurrentFilter = `${kana}_${stage}`;
   lbLastDoc = null;
   lbHasMore = true;
   lbRankOffset = 0;
   lbLoading = false;
-  const myGen = ++lbGeneration; // 這次 render 的世代編號
 
   const list = document.getElementById('lbList');
   const filterEl = document.getElementById('lbFilter');
@@ -1431,6 +1424,8 @@ function renderLB(kana='hiragana', stage='seion'){
 
   setTimeout(() => {
     list.innerHTML = '';
+    // 清除 lbScreen 層級可能殘留的 back-btn
+    document.querySelectorAll('#lbScreen > .back-btn').forEach(b => b.remove());
 
   // filter UI
   filterEl.innerHTML = '';
@@ -1478,11 +1473,11 @@ function renderLB(kana='hiragana', stage='seion'){
     document.head.appendChild(s);
   }
 
-  loadMoreLB(myGen);
+  loadMoreLB();
 
   const screen = document.getElementById('lbScreen');
   screen.onscroll = () => {
-    if(screen.scrollTop + screen.clientHeight >= screen.scrollHeight - 100) loadMoreLB(myGen);
+    if(screen.scrollTop + screen.clientHeight >= screen.scrollHeight - 100) loadMoreLB();
   };
 
     // filter 和 list 一起淡入
@@ -1490,9 +1485,8 @@ function renderLB(kana='hiragana', stage='seion'){
   }, 180);
 }
 
-async function loadMoreLB(gen){
+async function loadMoreLB(){
   if(lbLoading || !lbHasMore) return;
-  if(gen !== lbGeneration) return; // 已經切換到新榜，捨棄這次結果
   lbLoading = true;
 
   const list = document.getElementById('lbList');
@@ -1506,12 +1500,12 @@ async function loadMoreLB(gen){
     }
 
     const snapshot = await getDocs(q);
-    if(gen !== lbGeneration) return; // await 後再檢查一次
     const loader = document.getElementById('lbLoader');
     if(loader) loader.remove();
 
     if(snapshot.empty && lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
+      addBackBtn(list);
       lbHasMore = false; lbLoading = false;
       return;
     }
@@ -1546,21 +1540,30 @@ async function loadMoreLB(gen){
       end.className = 'lb-empty-footer';
       end.textContent = `── 共 ${lbRankOffset} 位冒險家 ──`;
       list.appendChild(end);
+      addBackBtn(list);
     }
 
   } catch(e) {
     console.error(e);
-    if(gen !== lbGeneration) return;
     const loader = document.getElementById('lbLoader');
     if(loader) loader.remove();
     if(lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>載入失敗，請稍後再試</div>`;
+      addBackBtn(list);
     }
   }
   lbLoading = false;
 }
 
-document.getElementById('backBtn').addEventListener('click', goHome);
+function addBackBtn(list){
+  if(list.querySelector('.back-btn')) return; // 已存在就不重複加
+  const btn = document.createElement('button');
+  btn.className = 'back-btn';
+  btn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>回首頁`;
+  btn.addEventListener('click', goHome);
+  list.appendChild(btn);
+}
+
 // ===== SCREEN MANAGEMENT =====
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
