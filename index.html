@@ -1408,12 +1408,15 @@ async function showLeaderboard(){
   renderLB('hiragana', 'seion');
 }
 
+let lbGeneration = 0; // 每次 renderLB 遞增，防止舊的 async 回調污染新榜
+
 function renderLB(kana='hiragana', stage='seion'){
   lbCurrentFilter = `${kana}_${stage}`;
   lbLastDoc = null;
   lbHasMore = true;
   lbRankOffset = 0;
   lbLoading = false;
+  const myGen = ++lbGeneration; // 這次 render 的世代編號
 
   const list = document.getElementById('lbList');
   const filterEl = document.getElementById('lbFilter');
@@ -1473,11 +1476,11 @@ function renderLB(kana='hiragana', stage='seion'){
     document.head.appendChild(s);
   }
 
-  loadMoreLB();
+  loadMoreLB(myGen);
 
   const screen = document.getElementById('lbScreen');
   screen.onscroll = () => {
-    if(screen.scrollTop + screen.clientHeight >= screen.scrollHeight - 100) loadMoreLB();
+    if(screen.scrollTop + screen.clientHeight >= screen.scrollHeight - 100) loadMoreLB(myGen);
   };
 
     // filter 和 list 一起淡入
@@ -1485,8 +1488,9 @@ function renderLB(kana='hiragana', stage='seion'){
   }, 180);
 }
 
-async function loadMoreLB(){
+async function loadMoreLB(gen){
   if(lbLoading || !lbHasMore) return;
+  if(gen !== lbGeneration) return; // 已經切換到新榜，捨棄這次結果
   lbLoading = true;
 
   const list = document.getElementById('lbList');
@@ -1500,6 +1504,7 @@ async function loadMoreLB(){
     }
 
     const snapshot = await getDocs(q);
+    if(gen !== lbGeneration) return; // await 後再檢查一次
     const loader = document.getElementById('lbLoader');
     if(loader) loader.remove();
 
@@ -1545,6 +1550,7 @@ async function loadMoreLB(){
 
   } catch(e) {
     console.error(e);
+    if(gen !== lbGeneration) return;
     const loader = document.getElementById('lbLoader');
     if(loader) loader.remove();
     if(lbRankOffset === 0){
