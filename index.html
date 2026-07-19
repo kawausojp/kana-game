@@ -380,6 +380,27 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 }
 
 .back-btn:hover { border-color:var(--sakura); color:var(--sakura); box-shadow:0 0 16px var(--glow-pink); }
+
+/* 排行榜的返回鍵：固定在左上角，不管捲到哪裡都按得到。
+   原本只在「全部載入完」才出現在列表最底下，183 筆要滑到底才能返回。 */
+.lb-back-fixed {
+  position:fixed;
+  top:calc(12px + env(safe-area-inset-top));
+  left:calc(12px + env(safe-area-inset-left));
+  z-index:60;
+  display:flex; align-items:center; gap:6px;
+  background:rgba(35,30,58,.82);
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  border:1.5px solid rgba(255,255,255,.15);
+  color:var(--text); border-radius:50px;
+  padding:10px 18px 10px 14px;
+  font-family:'Noto Sans TC',sans-serif; font-weight:700; font-size:.85rem;
+  box-shadow:0 4px 16px rgba(0,0,0,.4);
+  transition:all .2s;
+}
+.lb-back-fixed:hover { border-color:var(--sakura); color:var(--sakura); box-shadow:0 0 16px var(--glow-pink); }
+.lb-back-fixed svg { width:15px; height:15px; flex:none; }
+.lb-back-fixed.hidden { opacity:0; pointer-events:none; }
 .lb-empty {
   color:var(--muted); text-align:center; padding:40px 24px; font-size:.95rem;
   background:var(--card); border-radius:20px; border:1px dashed rgba(255,255,255,.08);
@@ -803,6 +824,12 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   <div class="lb-filter" id="lbFilter"></div>
   <div class="lb-list" id="lbList"></div>
 </div>
+
+<!-- 排行榜返回鍵：固定在畫面上，捲到哪都按得到 -->
+<button class="lb-back-fixed hidden" id="lbBackBtn" aria-label="回首頁">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+  回首頁
+</button>
 
 <script type="module">
 // ===== CURSOR =====
@@ -1496,8 +1523,6 @@ function renderLB(kana='hiragana', stage='seion'){
 
   setTimeout(() => {
     list.innerHTML = '';
-    // 清除 lbScreen 層級可能殘留的 back-btn
-    document.querySelectorAll('#lbScreen > .back-btn').forEach(b => b.remove());
 
   // filter UI
   filterEl.innerHTML = '';
@@ -1577,7 +1602,6 @@ async function loadMoreLB(){
 
     if(snapshot.empty && lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div>還沒有紀錄喔！<br>快去挑戰看看吧！</div>`;
-      addBackBtn(list);
       lbHasMore = false; lbLoading = false;
       return;
     }
@@ -1613,7 +1637,6 @@ async function loadMoreLB(){
       end.className = 'lb-empty-footer';
       end.textContent = `── 共 ${lbRankOffset} 位冒險家 ──`;
       list.appendChild(end);
-      addBackBtn(list);
     }
 
   } catch(e) {
@@ -1622,25 +1645,18 @@ async function loadMoreLB(){
     if(loader) loader.remove();
     if(lbRankOffset === 0){
       list.innerHTML = `<div class="lb-empty"><div class="lb-empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>載入失敗，請稍後再試</div>`;
-      addBackBtn(list);
     }
   }
   lbLoading = false;
 }
 
-function addBackBtn(list){
-  if(list.querySelector('.back-btn')) return; // 已存在就不重複加
-  const btn = document.createElement('button');
-  btn.className = 'back-btn';
-  btn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>回首頁`;
-  btn.addEventListener('click', goHome);
-  list.appendChild(btn);
-}
 
 // ===== SCREEN MANAGEMENT =====
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
+  // 返回鍵只在排行榜出現
+  document.getElementById('lbBackBtn').classList.toggle('hidden', id !== 'lbScreen');
   // 排行榜可以捲動，其他畫面鎖住
   if(id === 'lbScreen'){
     document.documentElement.style.overflow = '';
@@ -1720,6 +1736,9 @@ document.addEventListener('keydown', e=>{
       e.preventDefault();
       quitModal.classList.toggle('show');
     }
+  } else if(visible('lbScreen') && e.key==='Escape'){
+    e.preventDefault();
+    goHome();
   } else if(visible('homeScreen') && e.key==='Enter'){
     // 焦點若停在按鈕上，瀏覽器已經會觸發原生 click，這裡別再重複啟動
     if(document.activeElement instanceof HTMLButtonElement) return;
@@ -1734,7 +1753,7 @@ document.getElementById('retryBtn').addEventListener('click', retryGame);
 document.getElementById('homeBtn2').addEventListener('click', goHome);
 
 // Leaderboard screen
-// Leaderboard screen back button is now added dynamically in addBackBtn()
+document.getElementById('lbBackBtn').addEventListener('click', goHome);
 
 // ===== SERVICE WORKER =====
 if ('serviceWorker' in navigator) {
