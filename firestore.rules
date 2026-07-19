@@ -1,0 +1,50 @@
+rules_version = '2';
+
+// 排行榜規則。
+// 搭配前端的 Firebase Anonymous Auth：每個瀏覽器有固定 uid，
+// 文件 ID 一律是 "<uid>_<mode>"，因此一個人在每個模式只能有一筆、且只有本人能改。
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /leaderboard/{docId} {
+
+      // 排行榜是公開的
+      allow read: if true;
+
+      // 欄位白名單 + 型別/範圍檢查。
+      // hasOnly 很重要：不加的話任何人都能塞任意欄位進來灌爆文件。
+      function valid(d) {
+        return d.keys().hasOnly(['uid','name','score','acc','streak','mode','diff','date','timestamp'])
+          && d.uid is string
+          && d.name is string && d.name.size() >= 1 && d.name.size() <= 20
+          && d.score is number && d.score >= 0 && d.score <= 5000
+          && d.acc is number && d.acc >= 0 && d.acc <= 100
+          && d.streak is number && d.streak >= 0 && d.streak <= 500
+          && d.diff in ['normal','hard','blitz']
+          && d.mode in ['hiragana_seion','hiragana_dakuten','hiragana_youon','hiragana_all',
+                        'katakana_seion','katakana_dakuten','katakana_youon','katakana_all']
+          && d.timestamp is number;
+      }
+
+      // 必須已登入，資料裡的 uid 要等於自己的 uid，
+      // 而且文件 ID 必須就是 "<uid>_<mode>" —— 避免有人用自己的 uid 去佔別的 docId。
+      function owned(d) {
+        return request.auth != null
+          && request.auth.uid == d.uid
+          && docId == d.uid + '_' + d.mode;
+      }
+
+      allow create: if valid(request.resource.data)
+                    && owned(request.resource.data);
+
+      // 只能刷新自己的紀錄，而且分數必須嚴格更高、模式不可變。
+      // 原本寫 `allow update: if false`，導致任何人破自己紀錄都會存檔失敗。
+      allow update: if valid(request.resource.data)
+                    && owned(request.resource.data)
+                    && request.auth.uid == resource.data.uid
+                    && request.resource.data.mode == resource.data.mode
+                    && request.resource.data.score > resource.data.score;
+
+      allow delete: if false;
+    }
+  }
+}

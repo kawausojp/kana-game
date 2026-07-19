@@ -30,7 +30,12 @@
   --glow-pink: rgba(255,107,157,0.4);
   --glow-teal: rgba(0,229,200,0.4);
 }
-* { margin:0; padding:0; box-sizing:border-box; cursor:none; }
+* { margin:0; padding:0; box-sizing:border-box; }
+/* 只有在 JS 成功接管游標、且是滑鼠類精準指標時才隱藏系統游標。
+   否則（JS 出錯、觸控裝置）使用者會完全看不到游標。 */
+@media (pointer:fine){
+  body.custom-cursor, body.custom-cursor * { cursor:none; }
+}
 html { scroll-behavior:smooth; }
 body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','MS Gothic',sans-serif; min-height:100vh; overflow-x:hidden; }
 .screen { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;min-height:100vh;transition:opacity .4s,transform .4s;z-index:10; }
@@ -743,7 +748,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
   </div>
 
   <div class="question-area">
-    <div class="kana-card">
+    <div class="kana-card" role="group" aria-live="polite">
       <span class="kana-char" id="kanaChar" style="color:var(--text)">あ</span>
       <div class="kana-type-hint" id="kanaHint">這個平假名的讀音是？</div>
     </div>
@@ -751,7 +756,7 @@ body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC','Hira
 
   <div class="progress-dots" id="progressDots"></div>
   <div class="options-grid" id="optionsGrid"></div>
-  <div class="feedback-row" id="feedbackRow"></div>
+  <div class="feedback-row" id="feedbackRow" role="status" aria-live="assertive"></div>
 </div>
 
 <!-- RESULT -->
@@ -805,54 +810,76 @@ const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
 let mx=0,my=0,curHideTimer=null;
 
 
+let curScale=1;
 document.addEventListener('mousemove',e=>{
+  // 確認真的有滑鼠在動，才隱藏系統游標換上自訂游標
+  if(!document.body.classList.contains('custom-cursor'))
+    document.body.classList.add('custom-cursor');
   mx=e.clientX;my=e.clientY;
-  cur.style.transform=`translate(${mx-6}px,${my-6}px)`;
+  cur.style.transform=`translate(${mx-6}px,${my-6}px) scale(${curScale})`;
   cur2.style.transform=`translate(${mx-16}px,${my-16}px)`;
   cur.style.opacity='1';
   cur2.style.opacity='.3';
   clearTimeout(curHideTimer);
   curHideTimer=setTimeout(()=>{ cur.style.opacity='0'; cur2.style.opacity='0'; },1000);
 });
-document.querySelectorAll('button,a,.mode-btn').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{ cur.style.transform=`translate(${mx-6}px,${my-6}px) scale(2)`; });
-  el.addEventListener('mouseleave',()=>{ cur.style.transform=`translate(${mx-6}px,${my-6}px) scale(1)`; });
+// 事件委派：動態產生的選項按鈕原本吃不到 hover 放大效果
+function applyCurTransform(){
+  cur.style.transform=`translate(${mx-6}px,${my-6}px) scale(${curScale})`;
+}
+document.addEventListener('mouseover',e=>{
+  if(e.target.closest('button,a')){ curScale=2; applyCurTransform(); }
 });
+document.addEventListener('mouseout',e=>{
+  if(e.target.closest('button,a')){ curScale=1; applyCurTransform(); }
+});
+
+// ===== 粒子預算 =====
+// 特效節點沒有上限時，連點會把幾百個 DOM 節點同時掛在畫面上，手機會掉幀。
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MAX_PARTICLES = 140;
+let liveParticles = 0;
+function spawnFx(parent, node, lifeMs){
+  if(liveParticles >= MAX_PARTICLES) return false;
+  liveParticles++;
+  parent.appendChild(node);
+  setTimeout(()=>{ node.remove(); liveParticles--; }, lifeMs);
+  return true;
+}
 
 // 點擊水濺
 document.addEventListener('click', e=>{
+  if(reduceMotion) return;
+  if(!e.clientX && !e.clientY) return;   // 鍵盤觸發的 click，不噴在左上角
   const x=e.clientX, y=e.clientY;
   const colors=['#ff6b9d','#ff9dd0','#ffffff','#d0aaff'];
 
   // 漣漪環（2層，更粗更亮）
   for(let r=0;r<2;r++){
-    const el=document.createElement('div');
-    el.className='click-ripple';
+    const ring=document.createElement('div');
+    ring.className='click-ripple';
     const sz=22+r*26;
-    el.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;border:2px solid ${colors[r]};--dur:${.28+r*.1}s;animation-delay:${r*.04}s;box-shadow:0 0 8px ${colors[r]}, 0 0 16px ${colors[r]}55;`;
-    document.body.appendChild(el);
-    setTimeout(()=>el.remove(), 450);
+    ring.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;border:2px solid ${colors[r]};--dur:${.28+r*.1}s;animation-delay:${r*.04}s;box-shadow:0 0 8px ${colors[r]}, 0 0 16px ${colors[r]}55;`;
+    spawnFx(document.body, ring, 450);
   }
 
   // 水滴（10顆，更大更遠）
   for(let i=0;i<10;i++){
-    const el=document.createElement('div');
-    el.className='click-drop';
+    const drop=document.createElement('div');
+    drop.className='click-drop';
     const angle=(i/10)*Math.PI*2+Math.random()*.4;
     const dist=28+Math.random()*44;
     const sz=3+Math.random()*5;
     const c=colors[Math.floor(Math.random()*colors.length)];
-    el.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${c};box-shadow:0 0 6px ${c}, 0 0 12px ${c}88;--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;--dur:${.3+Math.random()*.15}s;animation-delay:${Math.random()*.03}s;`;
-    document.body.appendChild(el);
-    setTimeout(()=>el.remove(), 500);
+    drop.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${c};box-shadow:0 0 6px ${c}, 0 0 12px ${c}88;--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;--dur:${.3+Math.random()*.15}s;animation-delay:${Math.random()*.03}s;`;
+    spawnFx(document.body, drop, 500);
   }
 
   // 中心白光閃
   const flash=document.createElement('div');
   flash.className='click-ripple';
   flash.style.cssText=`left:${x}px;top:${y}px;width:10px;height:10px;background:white;box-shadow:0 0 12px #fff, 0 0 24px #ff6b9d;--dur:.2s;`;
-  document.body.appendChild(flash);
-  setTimeout(()=>flash.remove(), 250);
+  spawnFx(document.body, flash, 250);
 });
 
 // ===== STARS =====
@@ -866,6 +893,26 @@ document.addEventListener('DOMContentLoaded', () => {
     starsEl.appendChild(s);
   }
 });
+
+// ===== UTILS =====
+// 建立元素並以 textContent 帶入內容（永不注入 HTML）
+function el(tag, cls, text){
+  const n = document.createElement(tag);
+  if(cls) n.className = cls;
+  if(text !== undefined && text !== null) n.textContent = String(text);
+  return n;
+}
+// 把來源不可信的數值正規化，非數字一律當 0
+function num(v){ const n = Number(v); return Number.isFinite(n) ? n : 0; }
+
+// Fisher-Yates：均勻洗牌。sort(()=>Math.random()-.5) 的分布是偏的，別用。
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
 
 // ===== DATA =====
 const DATA = {
@@ -918,28 +965,20 @@ const DATA = {
     {char:'キャ',answer:'kya',type:'拗音'},{char:'シャ',answer:'sha',type:'拗音'},{char:'チャ',answer:'cha',type:'拗音'},{char:'ニャ',answer:'nya',type:'拗音'},
     {char:'ヒャ',answer:'hya',type:'拗音'},{char:'ミャ',answer:'mya',type:'拗音'},{char:'リャ',answer:'rya',type:'拗音'},
     {char:'ジャ',answer:'ja',type:'濁拗音'},{char:'ビャ',answer:'bya',type:'濁拗音'},{char:'ピャ',answer:'pya',type:'半濁拗音'},
-  ],
-  vocab: [
-    {char:'犬',answer:'狗',type:'動物'},{char:'猫',answer:'貓',type:'動物'},{char:'魚',answer:'魚',type:'動物'},{char:'鳥',answer:'鳥',type:'動物'},{char:'熊',answer:'熊',type:'動物'},
-    {char:'水',answer:'水',type:'自然'},{char:'火',answer:'火',type:'自然'},{char:'山',answer:'山',type:'自然'},{char:'川',answer:'河川',type:'自然'},{char:'空',answer:'天空',type:'自然'},
-    {char:'食べる',answer:'吃',type:'動詞'},{char:'飲む',answer:'喝',type:'動詞'},{char:'見る',answer:'看',type:'動詞'},{char:'聞く',answer:'聽',type:'動詞'},{char:'行く',answer:'去',type:'動詞'},
-    {char:'大きい',answer:'大的',type:'形容詞'},{char:'小さい',answer:'小的',type:'形容詞'},{char:'かわいい',answer:'可愛的',type:'形容詞'},{char:'おいしい',answer:'好吃的',type:'形容詞'},{char:'楽しい',answer:'快樂的',type:'形容詞'},
-    {char:'ありがとう',answer:'謝謝',type:'日常'},{char:'すみません',answer:'不好意思',type:'日常'},{char:'おはよう',answer:'早安',type:'日常'},{char:'こんにちは',answer:'你好',type:'日常'},{char:'さようなら',answer:'再見',type:'日常'},
-    {char:'電車',answer:'電車',type:'交通'},{char:'バス',answer:'公車',type:'交通'},{char:'学校',answer:'學校',type:'地點'},{char:'病院',answer:'醫院',type:'地點'},{char:'コンビニ',answer:'便利商店',type:'地點'},
   ]
 };
 
 // ===== STATE =====
 let selectedKana = 'hiragana';
 let selectedStage = 'seion';
-let selectedModes = ['hiragana']; // legacy compat
 let difficulty = 'normal';
 let timerMax = 60;
 let questions = [], qIndex = 0;
 let score = 0, streak = 0, maxStreak = 0, correct = 0, total = 0;
 let timerVal = 60, timerInterval = null;
 let answered = false;
-let scoreHistory = [];
+let nextQTimer = null;   // 下一題的排程，離開時要清掉
+let gameOver = false;    // endGame 只跑一次
 
 // 弱點複習：記錄答錯的 char
 let weakSet = JSON.parse(localStorage.getItem('kanaWeakSet') || '{}');
@@ -966,6 +1005,7 @@ function updateWeakBanner(){
 }
 
 const DIFF = { normal:{time:60,pts:10,bonus:5}, hard:{time:45,pts:15,bonus:8}, blitz:{time:25,pts:20,bonus:12} };
+const QUESTION_LIMIT = 40;   // 一局最多出幾題（進度點數量會跟著這個走）
 const TYPE_COLORS = {'平假名':'#ff6b9d','片假名':'#00e5c8','濁音':'#a78bfa','半濁音':'#ffd93d','拗音':'#ff9f43','濁拗音':'#ee5a24','半濁拗音':'#fd9644','動物':'#26de81','自然':'#45aaf2','動詞':'#fd9644','形容詞':'#a55eea','日常':'#ff6b9d','交通':'#00e5c8','地點':'#ffd93d'};
 
 // ===== AUDIO =====
@@ -989,6 +1029,7 @@ function sfxTick(){playTone(440,.05,'square',.05);}
 // ===== WATER SPLASH PARTICLES =====
 const pEl=document.getElementById('particles');
 function spawnParticles(x,y,isCorrect){
+  if(reduceMotion) return;
   const color = isCorrect ? ['#00e5c8','#7fffef','#a0fff5','#ffffff'] : ['#ff6b6b','#ff9f9f','#ffcccc','#ffffff'];
 
   // 外擴漣漪環
@@ -1004,8 +1045,7 @@ function spawnParticles(x,y,isCorrect){
       animation-delay:${r*.06}s;
       box-shadow: 0 0 8px ${color[r]}88;
     `;
-    pEl.appendChild(ring);
-    setTimeout(()=>ring.remove(), 700+r*200);
+    spawnFx(pEl, ring, 700+r*200);
   }
 
   // 水滴飛濺
@@ -1029,8 +1069,7 @@ function spawnParticles(x,y,isCorrect){
       animation-delay:${Math.random()*.08}s;
       transform:translate(-50%,-50%);
     `;
-    pEl.appendChild(drop);
-    setTimeout(()=>drop.remove(), 900);
+    spawnFx(pEl, drop, 900);
   }
 
   // 中心閃光
@@ -1043,8 +1082,7 @@ function spawnParticles(x,y,isCorrect){
     box-shadow: 0 0 12px ${color[0]}, 0 0 24px ${color[0]};
     --dur:.3s;
   `;
-  pEl.appendChild(flash);
-  setTimeout(()=>flash.remove(), 400);
+  spawnFx(pEl, flash, 400);
 }
 
 function scorePopup(x,y,pts,isCorrect){
@@ -1080,7 +1118,6 @@ function updateStageIcons(){
 
 function toggleKana(btn){
   selectedKana = btn.dataset.kana;
-  selectedModes = [selectedKana];
   document.querySelectorAll('.kana-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   updateStageIcons();
@@ -1111,30 +1148,23 @@ function buildQuestions(){
   // 'all' → 全部不篩選
   pool = pool.filter((v,i,a)=>a.findIndex(x=>x.char===v.char)===i);
 
-  // 弱點複習：答錯的優先放前面
-  const weak = getWeakList();
-  if(weak.length > 0){
-    const weakPool = pool.filter(q => weak.includes(q.char));
-    const normalPool = pool.filter(q => !weak.includes(q.char));
-    // 弱點題出現 2 次機率：放到前面，最多佔一半
-    const weakSlots = Math.min(weakPool.length * 2, 20);
-    const weakExpanded = [];
-    for(let i=0;i<weakSlots;i++) weakExpanded.push(weakPool[i % weakPool.length]);
-    for(let i=weakExpanded.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[weakExpanded[i],weakExpanded[j]]=[weakExpanded[j],weakExpanded[i]];}
-    for(let i=normalPool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[normalPool[i],normalPool[j]]=[normalPool[j],normalPool[i]];}
-    pool = [...weakExpanded, ...normalPool];
-  } else {
-    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-  }
-  return pool.slice(0,40);
+  // 弱點複習：上次答錯的保證入選，但打散在整份題目中，不連續重複出現
+  const weak = new Set(getWeakList());
+  const weakPool = shuffle(pool.filter(q => weak.has(q.char)));
+  const restPool = shuffle(pool.filter(q => !weak.has(q.char)));
+
+  const weakQuota = Math.min(weakPool.length, Math.floor(QUESTION_LIMIT / 2));
+  const picked = [
+    ...weakPool.slice(0, weakQuota),
+    ...restPool.slice(0, QUESTION_LIMIT - weakQuota)
+  ];
+  return shuffle(picked);
 }
 
 function getWrongOptions(correct, pool, n=3){
-  // 只從同模式、同類型優先抽錯誤選項，避免混入其他模式
-  const sameType=pool.filter(q=>q.answer!==correct);
-  const allAnswers=[...new Set(sameType.map(q=>q.answer))];
-  const shuffled=allAnswers.sort(()=>Math.random()-.5);
-  return shuffled.slice(0,n);
+  // 只從同模式抽錯誤選項，避免混入其他模式
+  const allAnswers=[...new Set(pool.filter(q=>q.answer!==correct).map(q=>q.answer))];
+  return shuffle(allAnswers).slice(0,n);
 }
 
 // ===== START GAME =====
@@ -1142,7 +1172,8 @@ function startGame(){
   questions=buildQuestions();
   if(questions.length===0)return;
   qIndex=0; score=0; streak=0; maxStreak=0; correct=0; total=0;
-  answered=false;
+  answered=false; gameOver=false;
+  clearTimeout(nextQTimer);
   const cfg=DIFF[difficulty];
   timerVal=cfg.time; timerMax=cfg.time;
   showScreen('gameScreen');
@@ -1154,15 +1185,20 @@ function startGame(){
 function retryGame(){ startGame(); }
 
 function buildProgressDots(){
-  const el=document.getElementById('progressDots');
-  el.innerHTML='';
-  const count=Math.min(questions.length,20);
-  for(let i=0;i<count;i++){
+  const wrap=document.getElementById('progressDots');
+  wrap.innerHTML='';
+  // 每題一顆點。之前固定 20 顆但出 40 題，第 21 題起進度就卡在最後一顆不動。
+  for(let i=0;i<questions.length;i++){
     const d=document.createElement('div');
     d.className='prog-dot'+(i===0?' current':'');
     d.id=`dot${i}`;
-    el.appendChild(d);
+    wrap.appendChild(d);
   }
+}
+
+function markDot(i, cls){
+  const dot=document.getElementById(`dot${i}`);
+  if(dot){ dot.classList.remove('current'); dot.classList.add(cls); }
 }
 
 function showQuestion(){
@@ -1179,14 +1215,16 @@ function showQuestion(){
   document.getElementById('kanaHint').textContent=hints[q.type]||'';
   // options
   const wrongs=getWrongOptions(q.answer,questions);
-  const opts=[q.answer,...wrongs].sort(()=>Math.random()-.5);
+  const opts=shuffle([q.answer,...wrongs]);
   const grid=document.getElementById('optionsGrid');
   grid.innerHTML='';
-  opts.forEach(opt=>{
+  opts.forEach((opt,i)=>{
     const btn=document.createElement('button');
     btn.className='opt-btn';
     btn.textContent=opt;
-    btn.onclick=(e)=>checkAnswer(opt,q.answer,btn,e);
+    btn.dataset.optIndex=i;              // 對應鍵盤 1〜4
+    btn.setAttribute('aria-keyshortcuts', String(i+1));
+    btn.addEventListener('click',(e)=>checkAnswer(opt,q.answer,btn,e));
     grid.appendChild(btn);
   });
   document.getElementById('feedbackRow').textContent='';
@@ -1201,6 +1239,13 @@ function updateDot(){
     if(i<qIndex) { /* keep done class */ }
     else if(i===qIndex) d.classList.add('current');
   });
+}
+
+// 特效座標：滑鼠點擊用游標位置，鍵盤觸發（click() 的座標是 0,0）改用按鈕中心
+function fxPoint(e, btn){
+  if(e && (e.clientX || e.clientY)) return {x:e.clientX, y:e.clientY};
+  const r = btn.getBoundingClientRect();
+  return {x:r.left + r.width/2, y:r.top + r.height/2};
 }
 
 function checkAnswer(selected, correctAns, btn, e){
@@ -1224,10 +1269,9 @@ function checkAnswer(selected, correctAns, btn, e){
     sfxCorrect();
     if(streak>=3)sfxCombo();
     flashScreen('correct-flash');
-    if(e){spawnParticles(e.clientX,e.clientY,true);scorePopup(e.clientX,e.clientY,pts,true);}
+    { const p=fxPoint(e,btn); spawnParticles(p.x,p.y,true); scorePopup(p.x,p.y,pts,true); }
     if(streak>=3){ const cb=document.getElementById('comboBanner'); document.getElementById('comboText').textContent=`COMBO ×${streak}`; cb.classList.add('show'); clearTimeout(cb._t); cb._t=setTimeout(()=>cb.classList.remove('show'),900); }
-    const dot=document.getElementById(`dot${Math.min(qIndex,19)}`);
-    if(dot){dot.classList.remove('current');dot.classList.add('done-correct');}
+    markDot(qIndex,'done-correct');
     // 弱點：答對了就移除弱點記錄
     removeWeak(questions[qIndex]?.char);
   } else {
@@ -1238,16 +1282,16 @@ function checkAnswer(selected, correctAns, btn, e){
     document.getElementById('feedbackRow').style.color='var(--coral)';
     sfxWrong();
     flashScreen('wrong-flash');
-    if(e){spawnParticles(e.clientX,e.clientY,false);scorePopup(e.clientX,e.clientY,0,false);}
-    const dot=document.getElementById(`dot${Math.min(qIndex,19)}`);
-    if(dot){dot.classList.remove('current');dot.classList.add('done-wrong');}
+    { const p=fxPoint(e,btn); spawnParticles(p.x,p.y,false); scorePopup(p.x,p.y,0,false); }
+    markDot(qIndex,'done-wrong');
     // 弱點：答錯就加入弱點清單
-    if(selectedStage !== 'vocab') addWeak(questions[qIndex]?.char);
+    addWeak(questions[qIndex]?.char);
   }
 
   updateHUD();
   qIndex++;
-  setTimeout(()=>{ if(timerVal>0)showQuestion(); },900);
+  clearTimeout(nextQTimer);
+  nextQTimer=setTimeout(()=>{ if(!gameOver && timerVal>0) showQuestion(); },900);
 }
 
 function updateHUD(){
@@ -1285,7 +1329,10 @@ function quitGame(){
 
 // ===== END GAME =====
 function endGame(){
+  if(gameOver) return;   // 計時歸零與手動結束可能同時觸發，只跑一次
+  gameOver = true;
   clearInterval(timerInterval);
+  clearTimeout(nextQTimer);
   showScreen('resultScreen');
   const acc=total>0?Math.round(correct/total*100):0;
   document.getElementById('rScore').textContent=score;
@@ -1323,8 +1370,9 @@ function animCount(id,from,to,dur){
 
 // ===== FIREBASE SETUP =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDocs, query, orderBy, limit, where, startAfter } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, query, orderBy, limit, where, startAfter } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC5Xp7xvfCGiGzAvs9bxjrx3bJBphp0_Yg",
@@ -1339,43 +1387,58 @@ const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
 getAnalytics(fbApp);
 
+// ===== 匿名登入 =====
+// 每個瀏覽器拿到一個固定的 uid，用來當排行榜紀錄的擁有者。
+// 使用者完全無感（不用註冊、不用輸入任何東西），但 Firestore rules 就能靠
+// request.auth.uid 判斷「這筆紀錄是不是你的」，取代原本靠 localStorage 猜的脆弱做法。
+const auth = getAuth(fbApp);
+
+const authReady = new Promise(resolve => {
+  onAuthStateChanged(auth, user => { if(user) resolve(user); });
+  signInAnonymously(auth).catch(err => {
+    // 最常見原因：Firebase Console → Authentication → Sign-in method 沒開啟「匿名」
+    console.error('匿名登入失敗，排行榜將無法儲存：', err);
+    resolve(null);
+  });
+});
+
 // ===== LEADERBOARD =====
 // 記住玩家名字，結算時自動帶入
 let savedPlayerName = '';
 
 async function saveScore(){
   const nameInput = document.getElementById('playerName');
-  const name = nameInput.value.trim() || savedPlayerName || '匿名冒險家';
+  // 去除控制字元並限長。maxlength 只是 DOM 屬性，繞得過去。
+  const raw = (nameInput.value || savedPlayerName || '匿名冒險家');
+  const name = raw.replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,12) || '匿名冒險家';
   const saveBtn = document.querySelector('.save-btn');
   saveBtn.textContent = '儲存中...';
   saveBtn.disabled = true;
 
   const mode = `${selectedKana}_${selectedStage}`;
-  const docId = `${name}_${mode}`.replace(/[^a-zA-Z0-9_\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/g, '_');
+
+  const user = await authReady;
+  if(!user){
+    saveBtn.textContent = '❌ 無法驗證身分，請重整';
+    saveBtn.disabled = false;
+    return;
+  }
+
+  // 紀錄以 uid 為主鍵：一個玩家在每個模式下只有一筆。
+  // 別人改不了，自己也不會因為清掉 localStorage 就失去紀錄。
+  const docId = `${user.uid}_${mode}`;
 
   try {
     const entryRef = doc(db, 'leaderboard', docId);
-    const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const existing = await getDoc(entryRef);
 
-    if(existing.exists()){
-      const isMyRecord = savedPlayerName === name;
-      if(!isMyRecord){
-        // 同名但不是本人 → 拒絕
-        saveBtn.textContent = '儲存';
-        saveBtn.disabled = false;
-        nameInput.value = '';
-        nameInput.placeholder = '此名稱已被使用，請換一個！';
-        nameInput.focus();
-        return;
-      }
-      if(existing.data().score >= score){
-        saveBtn.textContent = `✅ 已是最高分！(${existing.data().score}分)`;
-        return;
-      }
+    if(existing.exists() && existing.data().score >= score){
+      saveBtn.textContent = `✅ 已是最高分！(${existing.data().score}分)`;
+      return;
     }
 
     await setDoc(entryRef, {
+      uid: user.uid,
       name, score,
       acc: total > 0 ? Math.round(correct / total * 100) : 0,
       streak: maxStreak, mode,
@@ -1529,17 +1592,18 @@ async function loadMoreLB(){
       const row = document.createElement('div');
       row.className = 'lb-row' + (globalIndex < 3 ? ' ' + rankClasses[globalIndex] : '');
       const diffLabel = {normal:'普通', hard:'困難', blitz:'閃電'}[entry.diff] || entry.diff;
-      row.innerHTML = `
-        <div class="lb-rank-badge">${globalIndex + 1}</div>
-        <div class="lb-info">
-          <div class="lb-name">${entry.name}</div>
-          <div class="lb-meta">正確率 ${entry.acc}% · 最高連擊 ×${entry.streak} · ${entry.date}</div>
-        </div>
-        <div class="lb-right">
-          <div class="lb-score">${entry.score}</div>
-          <div class="lb-diff">${diffLabel}</div>
-        </div>
-      `;
+
+      // 排行榜資料由任意用戶端寫入，一律用 textContent 帶入，不可走 innerHTML
+      const badge = el('div','lb-rank-badge', globalIndex + 1);
+      const info  = el('div','lb-info');
+      info.appendChild(el('div','lb-name', entry.name));
+      info.appendChild(el('div','lb-meta',
+        `正確率 ${num(entry.acc)}% · 最高連擊 ×${num(entry.streak)} · ${String(entry.date ?? '')}`));
+      const right = el('div','lb-right');
+      right.appendChild(el('div','lb-score', num(entry.score)));
+      right.appendChild(el('div','lb-diff', diffLabel));
+
+      row.append(badge, info, right);
       list.appendChild(row);
     });
 
@@ -1590,7 +1654,13 @@ function showScreen(id){
     document.body.style.height = '100%';
   }
 }
-function goHome(){ clearInterval(timerInterval); showScreen('homeScreen'); updateWeakBanner(); }
+function goHome(){
+  gameOver = true;
+  clearInterval(timerInterval);
+  clearTimeout(nextQTimer);
+  showScreen('homeScreen');
+  updateWeakBanner();
+}
 
 // ===== INIT & EVENT BINDINGS =====
 showScreen('homeScreen');
@@ -1622,13 +1692,40 @@ document.getElementById('quitCancelBtn').addEventListener('click', ()=>{
 });
 document.getElementById('quitConfirmBtn').addEventListener('click', ()=>{
   document.getElementById('quitModal').classList.remove('show');
+  // 彈窗承諾「進度將不會被儲存」→ 中離就真的不進結算、不寫排行榜
+  gameOver = true;
   clearInterval(timerInterval);
-  endGame();
+  clearTimeout(nextQTimer);
+  goHome();
 });
 // 點擊遮罩也可關閉
 document.getElementById('quitModal').addEventListener('click', (e)=>{
   if(e.target === document.getElementById('quitModal'))
     document.getElementById('quitModal').classList.remove('show');
+});
+
+// 鍵盤操作：1〜4 選答案、Esc 叫出離開確認、Enter 在首頁開始
+document.addEventListener('keydown', e=>{
+  // e.target 不保證是 Element（事件直接派送到 document 時就不是），先確認再 matches
+  const t = e.target;
+  if(t instanceof Element && t.matches('input,textarea')) return;   // 打名字時不攔截
+  const visible = id => !document.getElementById(id).classList.contains('hidden');
+  const quitModal = document.getElementById('quitModal');
+
+  if(visible('gameScreen')){
+    if(e.key>='1' && e.key<='4'){
+      const btn=document.querySelector(`.opt-btn[data-opt-index="${+e.key-1}"]`);
+      if(btn && !btn.disabled){ e.preventDefault(); btn.click(); }
+    } else if(e.key==='Escape'){
+      e.preventDefault();
+      quitModal.classList.toggle('show');
+    }
+  } else if(visible('homeScreen') && e.key==='Enter'){
+    // 焦點若停在按鈕上，瀏覽器已經會觸發原生 click，這裡別再重複啟動
+    if(document.activeElement instanceof HTMLButtonElement) return;
+    e.preventDefault();
+    startGame();
+  }
 });
 
 // Result screen
@@ -1642,7 +1739,7 @@ document.getElementById('homeBtn2').addEventListener('click', goHome);
 // ===== SERVICE WORKER =====
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/kana-game/service-worker.js')
+    navigator.serviceWorker.register('./service-worker.js')
       .then(reg => console.log('SW registered:', reg.scope))
       .catch(err => console.log('SW error:', err));
   });
